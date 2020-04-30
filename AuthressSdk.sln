@@ -1,0 +1,32 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DEA}") = "Solution Items", "Solution Items", "{509789A5-9909-4E22-950C-9CFD085BE7BA}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authress.SDK", "src\Authress.SDK\Authress.SDK.csproj", "{A2796076-816B-4A87-837D-0F269BB6A89A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2796076-816B-4A87-837D-0F269BB6A89A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2796076-816B-4A87-837D-0F269BB6A89A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2796076-816B-4A87-837D-0F269BB6A89A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2796076-816B-4A87-837D-0F269BB6A89A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6466B463-C1F8-46B7-8D9C-EDE176A18E8A}
+	EndGlobalSection
+EndGlobal
