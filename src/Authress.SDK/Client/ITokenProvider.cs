@@ -87,7 +87,7 @@ namespace Authress.SDK
     /// <summary>
     /// Provides the token from a provider function.
     /// </summary>
-    public class ResolverTokenProvider : ITokenProvider
+    public class DynamicTokenProvider : ITokenProvider
     {
         private Func<Task<string>> resolver;
 
@@ -96,7 +96,7 @@ namespace Authress.SDK
         /// The expectation is that this resolver could grab the current user's JWT from the incoming service call and pass it to the outgoing Authress service call.
         /// <param name="resolver">A function that will be called to resolve a token.</param>
         /// </summary>
-        public ResolverTokenProvider(Func<Task<string>> resolver)
+        public DynamicTokenProvider(Func<Task<string>> resolver)
         {
             this.resolver = resolver;
         }

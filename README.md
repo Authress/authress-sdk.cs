@@ -26,7 +26,7 @@ namespace Microservice
             // 1. instantiate all the necessary classes (example using ASP.NET or MVC, but any function works)
             //   If using the HttpContextAccessor, register it first inside the application root
             //   services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            var tokenProvider = new ResolverTokenProvider(() =>
+            var tokenProvider = new DynamicTokenProvider(() =>
             {
                 // Then get the access token from the incoming API request and return it
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -37,7 +37,6 @@ namespace Microservice
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
-            tokenProvider.setToken(userJwt);
             await authressClient.AuthorizeUser("USERID", "RESOURCE_URI", "PERMISSION");
 
             // API Route code
