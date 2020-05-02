@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Authress.SDK;
+using Authress.SDK.Api;
+using Authress.SDK.Client;
 using Authress.SDK.DTO;
 
-namespace Authress.SDK.Api
+namespace Authress.SDK
 {
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
@@ -17,37 +20,19 @@ namespace Authress.SDK.Api
         /// <param name="clientId">The unique identifier of the client.</param>
         /// <param name="keyId">The id of the access key to remove from the client.</param>
         /// <returns></returns>
-        public void V1ClientsClientIdAccessKeysKeyIdDelete (string clientId, string keyId)
+        public async Task DeleteAccessKey (string clientId, string keyId)
         {
             // verify the required parameter 'clientId' is set
             if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdAccessKeysKeyIdDelete");
             // verify the required parameter 'keyId' is set
             if (keyId == null) throw new ApiException(400, "Missing required parameter 'keyId' when calling V1ClientsClientIdAccessKeysKeyIdDelete");
 
-            var path = "/v1/clients/{clientId}/access-keys/{keyId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "clientId" + "}", ApiClient.ParameterTostring(clientId));
-path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.DELETE, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdAccessKeysKeyIdDelete: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdAccessKeysKeyIdDelete: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
+            var path = $"/v1/clients/{clientId}/access-keys/{keyId}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.DeleteAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+            }
         }
 
         /// <summary>
@@ -55,34 +40,19 @@ path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
         /// </summary>
         /// <param name="clientId">The unique identifier of the client.</param>
         /// <returns>ClientAccessKey</returns>
-        public ClientAccessKey V1ClientsClientIdAccessKeysPost (string clientId)
+        public async Task<ClientAccessKey> RequestAccessKey (string clientId)
         {
             // verify the required parameter 'clientId' is set
             if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdAccessKeysPost");
 
-            var path = "/v1/clients/{clientId}/access-keys";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "clientId" + "}", ApiClient.ParameterTostring(clientId));
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdAccessKeysPost: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdAccessKeysPost: " + response.ErrorMessage, response.ErrorMessage);
-
-            return (ClientAccessKey) ApiClient.Deserialize(response.Content, typeof(ClientAccessKey), response.Headers);
+            var path = $"/v1/clients/{clientId}/access-keys";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            var body = new AccessKeyRequest();
+            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<ClientAccessKey>();
+            }
         }
 
         /// <summary>
@@ -90,34 +60,17 @@ path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
         /// </summary>
         /// <param name="clientId">The unique identifier for the client.</param>
         /// <returns></returns>
-        public void V1ClientsClientIdDelete (string clientId)
+        public async Task DeleteClient (string clientId)
         {
             // verify the required parameter 'clientId' is set
             if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdDelete");
 
-            var path = "/v1/clients/{clientId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "clientId" + "}", ApiClient.ParameterTostring(clientId));
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.DELETE, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdDelete: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdDelete: " + response.ErrorMessage, response.ErrorMessage);
-
-            return;
+            var path = $"/v1/clients/{clientId}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.DeleteAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+            }
         }
 
         /// <summary>
@@ -125,34 +78,18 @@ path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
         /// </summary>
         /// <param name="clientId">The unique identifier for the client.</param>
         /// <returns>Client</returns>
-        public ServiceClient V1ClientsClientIdGet (string clientId)
+        public async Task<ServiceClient> GetClient (string clientId)
         {
             // verify the required parameter 'clientId' is set
             if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdGet");
 
-            var path = "/v1/clients/{clientId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "clientId" + "}", ApiClient.ParameterTostring(clientId));
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdGet: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdGet: " + response.ErrorMessage, response.ErrorMessage);
-
-            return (ServiceClient) ApiClient.Deserialize(response.Content, typeof(ServiceClient), response.Headers);
+            var path = $"/v1/clients/{clientId}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<ServiceClient>();
+            }
         }
 
         /// <summary>
@@ -161,68 +98,36 @@ path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
         /// <param name="body"></param>
         /// <param name="clientId">The unique identifier for the client.</param>
         /// <returns>Client</returns>
-        public ServiceClient V1ClientsClientIdPut (ServiceClient body, string clientId)
+        public async Task<ServiceClient> UpdateClient (string clientId, ServiceClient body)
         {
             // verify the required parameter 'body' is set
             if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ClientsClientIdPut");
             // verify the required parameter 'clientId' is set
             if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdPut");
 
-            var path = "/v1/clients/{clientId}";
-            path = path.Replace("{format}", "json");
-            path = path.Replace("{" + "clientId" + "}", ApiClient.ParameterTostring(clientId));
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-                                                postBody = ApiClient.Serialize(body); // http body (model) parameter
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.PUT, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdPut: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsClientIdPut: " + response.ErrorMessage, response.ErrorMessage);
-
-            return (ServiceClient) ApiClient.Deserialize(response.Content, typeof(ServiceClient), response.Headers);
+            var path = $"/v1/clients/{clientId}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PutAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<ServiceClient>();
+            }
         }
 
         /// <summary>
         /// Get clients collection Returns all clients that the user has access to in the account.
         /// </summary>
         /// <returns>ClientCollection</returns>
-        public ClientCollection V1ClientsGet ()
+        public async Task<ClientCollection> GetClients ()
         {
 
             var path = "/v1/clients";
-            path = path.Replace("{format}", "json");
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.GET, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsGet: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsGet: " + response.ErrorMessage, response.ErrorMessage);
-
-            return (ClientCollection) ApiClient.Deserialize(response.Content, typeof(ClientCollection), response.Headers);
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<ClientCollection>();
+            }
         }
 
         /// <summary>
@@ -230,34 +135,18 @@ path = path.Replace("{" + "keyId" + "}", ApiClient.ParameterTostring(keyId));
         /// </summary>
         /// <param name="body"></param>
         /// <returns>Client</returns>
-        public ServiceClient V1ClientsPost (ServiceClient body)
+        public async Task<ServiceClient> CreateClient (ServiceClient body)
         {
             // verify the required parameter 'body' is set
             if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ClientsPost");
 
             var path = "/v1/clients";
-            path = path.Replace("{format}", "json");
-
-            var queryParams = new Dictionary<string, string>();
-            var headerParams = new Dictionary<string, string>();
-            var formParams = new Dictionary<string, string>();
-            var fileParams = new Dictionary<string, FileParameter>();
-            string postBody = null;
-
-                                                postBody = ApiClient.Serialize(body); // http body (model) parameter
-
-            // authentication setting, if any
-            string[] authSettings = new string[] { "oauth2" };
-
-            // make the HTTP request
-            IRestResponse response = (IRestResponse) ApiClient.CallApi(path, Method.POST, queryParams, postBody, headerParams, formParams, fileParams, authSettings);
-
-            if (((int)response.StatusCode) >= 400)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsPost: " + response.Content, response.Content);
-            else if (((int)response.StatusCode) == 0)
-                throw new ApiException ((int)response.StatusCode, "Error calling V1ClientsPost: " + response.ErrorMessage, response.ErrorMessage);
-
-            return (ServiceClient) ApiClient.Deserialize(response.Content, typeof(ServiceClient), response.Headers);
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<ServiceClient>();
+            }
         }
 
     }

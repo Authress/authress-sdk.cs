@@ -52,7 +52,7 @@ namespace Authress.SDK
         /// </summary>
         /// <param name="body"></param>
         /// <returns>AccessRecord</returns>
-        public async Task<AccessRecordCollection> CreateRecord (AccessRecord body)
+        public async Task<AccessRecord> CreateRecord (AccessRecord body)
         {
             // verify the required parameter 'body' is set
             if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1RecordsPost");
@@ -62,7 +62,7 @@ namespace Authress.SDK
             using (var response = await client.PostAsync(path, body.ToHttpContent()))
             {
                 await response.ThrowIfNotSuccessStatusCode();
-                return await response.Content.ReadAsAsync<AccessRecordCollection>();
+                return await response.Content.ReadAsAsync<AccessRecord>();
             }
         }
 

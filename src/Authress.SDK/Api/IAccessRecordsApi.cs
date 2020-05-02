@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Authress.SDK;
 using Authress.SDK.DTO;
 
 namespace Authress.SDK.Api
@@ -22,7 +18,7 @@ namespace Authress.SDK.Api
         /// Get all account records. Returns a paginated records list for the account. Only records the user has access to are returned.
         /// </summary>
         /// <returns>AccessRecord</returns>
-        Task<AccessRecord> GetRecords ();
+        Task<AccessRecordCollection> GetRecords ();
         /// <summary>
         /// Create a new access record Specify user roles for specific resources.
         /// </summary>

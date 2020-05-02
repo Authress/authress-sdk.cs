@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace Authress.SDK.DTO
 {
-
     /// <summary>
     ///
     /// </summary>

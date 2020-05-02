@@ -30,11 +30,13 @@ namespace Authress.SDK.Client
     {
         private readonly SemaphoreSlim syncObj = new SemaphoreSlim(1);
         private HttpClient clientProxy;
-        private HttpClientSettings settings;
+        private readonly HttpClientSettings settings;
+        private readonly ITokenProvider tokenProvider;
 
-        public HttpClientProvider(HttpClientSettings settings)
+        public HttpClientProvider(HttpClientSettings settings, ITokenProvider tokenProvider)
         {
             this.settings = settings;
+            this.tokenProvider = tokenProvider;
         }
 
 
@@ -58,7 +60,7 @@ namespace Authress.SDK.Client
 
                 // create the inner handlers for the cache handler, the outermost handler is called first. (https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers)
                 HttpMessageHandler outermostHandler = new HttpClientHandler { AllowAutoRedirect = true };
-                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler);
+                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider);
 
                 // create the client and assign it to the member variable for future access, create a tmp client so that the client is fully initialized before setting "client" property.
                 clientProxy = new HttpClient(outermostHandler);
@@ -79,12 +81,18 @@ namespace Authress.SDK.Client
 
     internal class AddAuthorizationHeaderHandler : DelegatingHandler
     {
-        public AddAuthorizationHeaderHandler(HttpMessageHandler innerHandler) : base(innerHandler) { }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        private ITokenProvider tokenProvider;
+        public AddAuthorizationHeaderHandler(HttpMessageHandler innerHandler, ITokenProvider tokenProvider) : base(innerHandler)
         {
-            request.Headers.TryAddWithoutValidation("Authorization", "");
-            return base.SendAsync(request, cancellationToken);
+            this.tokenProvider = tokenProvider;
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var bearerToken = await tokenProvider.GetBearerToken();
+            var token = bearerToken.ToLower().Contains("bearer") ? bearerToken : $"Bearer {bearerToken}";
+            request.Headers.TryAddWithoutValidation("Authorization", token);
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

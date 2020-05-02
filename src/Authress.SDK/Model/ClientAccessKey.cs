@@ -45,4 +45,12 @@ namespace Authress.SDK.DTO
         [JsonProperty(PropertyName = "accessKey")]
         public string AccessKey { get; set; }
     }
+
+    /// <summary>
+    /// Empty Access key request for POST
+    /// </summary>
+    public class AccessKeyRequest
+    {
+
+    }
 }

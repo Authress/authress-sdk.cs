@@ -12,7 +12,7 @@ namespace Authress.SDK.DTO
     /// The collection of a list of clients
     /// </summary>
     [DataContract]
-    public class AccessRecordCollection
+    public class ClientCollection
     {
         /// <summary>
         /// A list of clients

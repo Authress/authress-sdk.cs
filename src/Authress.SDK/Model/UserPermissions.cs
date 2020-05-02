@@ -12,15 +12,8 @@ namespace Authress.SDK.DTO
     /// A collect of permissions that the user has to a resource.
     /// </summary>
     [DataContract]
-    public class InlineResponse200
+    public class UserPermissions
     {
-        /// <summary>
-        /// Gets or Sets Account
-        /// </summary>
-        [DataMember(Name = "account", EmitDefaultValue = false)]
-        [JsonProperty(PropertyName = "account")]
-        public InlineResponse200Account Account { get; set; }
-
         /// <summary>
         /// Gets or Sets UserId
         /// </summary>

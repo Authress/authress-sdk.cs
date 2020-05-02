@@ -5,128 +5,100 @@ The Authress SDK for C#
 [![Build Status](https://travis-ci.com/authress/authress-sdk.cs.svg?branch=master)](https://travis-ci.com/authress/authress-sdk.cs)
 
 
-### Development
+### Usage
 
+#### Package Management
+* [Authress.SDK Nuget Package](https://www.nuget.org/packages/Authress.SDK)
+
+* run: `dotnet add Authress.SDK` (or install via visual tools)
+
+#### Authorize users using user identity token
 ```csharp
-using Authress.SDK.Api;
 using Authress.SDK;
-using Authress.SDK.DTO;
-```
-<a name="getting-started"></a>
-## Getting Started
 
-```csharp
-using System;
-using System.Diagnostics;
-using Authress.SDK.Api;
-using Authress.SDK;
-using Authress.SDK.DTO;
-
-namespace Example
+namespace Microservice
 {
-    public class Example
+    public class Controller
     {
-        public void main()
+        public static async void Route()
         {
-
-
-            var apiInstance = new AccessRecordsApi();
-            var body = new ClaimRequest(); // ClaimRequest |
-
-            try
+            // automatically populate forward the users token
+            // 1. instantiate all the necessary classes (example using ASP.NET or MVC, but any function works)
+            //   If using the HttpContextAccessor, register it first inside the application root
+            //   services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            var tokenProvider = new ResolverTokenProvider(() =>
             {
-                // Claim a resource by an allowed user
-                ClaimResponse result = apiInstance.V1ClaimsPost(body);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1ClaimsPost: " + e.Message );
-            }
+                // Then get the access token from the incoming API request and return it
+                var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("Bearer", "access_token");
+                return accessToken;
+            });
+            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            var authressClient = new AuthressClient(tokenProvider, authressSettings);
+
+            // 2. At runtime attempt to Authorize the user for the resource
+            tokenProvider.setToken(userJwt);
+            await authressClient.AuthorizeUser("USERID", "RESOURCE_URI", "PERMISSION");
+
+            // API Route code
+            // ...
         }
     }
 }
+```
 
-            var apiInstance = new AccessRecordsApi();
+#### Authorize using an explicitly set token each time
+```csharp
+using Authress.SDK;
 
-            try
-            {
-                // Get all account records.
-                AccessRecord result = apiInstance.V1RecordsGet();
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1RecordsGet: " + e.Message );
-            }
+namespace Microservice
+{
+    public class Controller
+    {
+        public static async void Route()
+        {
+            // automatically populate forward the users token
+            // 1. instantiate all the necessary classes
+            var tokenProvider = new ManualTokenProvider();
+            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            var authressClient = new AuthressClient(tokenProvider, authressSettings);
+
+            // 2. At runtime attempt to Authorize the user for the resource
+            tokenProvider.setToken(userJwt);
+            await authressClient.AuthorizeUser("USERID", "RESOURCE_URI", "PERMISSION");
+
+            // API Route code
+            // ...
         }
     }
 }
+```
 
-            var apiInstance = new AccessRecordsApi();
-            var body = new AccessRecord(); // AccessRecord |
+#### Authorize users using client secret
+```csharp
+using Authress.SDK;
 
-            try
-            {
-                // Create a new access record
-                AccessRecord result = apiInstance.V1RecordsPost(body);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1RecordsPost: " + e.Message );
-            }
-        }
-    }
-}
+namespace Microservice
+{
+    public class Controller
+    {
+        public static async void Route()
+        {
+            // accessKey is returned from service client creation in Authress UI
+            // 1. instantiate all the necessary classes
+            var accessKey = 'ACCESS_KEY';
+            // Assuming it was encrypted in storage, decrypt it
+            var decodedAccessKey = decrypt(accessKey);
+            var tokenProvider = new AuthressClientTokenProvider(decodedAccessKey);
+            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
-            var apiInstance = new AccessRecordsApi();
-            var recordId = recordId_example;  // string | The identifier of the access record.
+            // Attempt to Authorize the user for the resource
+            // 2. At runtime the token provider will automatically pull the token forward
+            await authressClient.AuthorizeUser("USERID", "RESOURCE_URI", "PERMISSION");
 
-            try
-            {
-                // Deletes an access record.
-                apiInstance.V1RecordsRecordIdDelete(recordId);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1RecordsRecordIdDelete: " + e.Message );
-            }
-        }
-    }
-}
-
-            var apiInstance = new AccessRecordsApi();
-            var recordId = recordId_example;  // string | The identifier of the access record.
-
-            try
-            {
-                // Get an access record for the account.
-                AccessRecord result = apiInstance.V1RecordsRecordIdGet(recordId);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1RecordsRecordIdGet: " + e.Message );
-            }
-        }
-    }
-}
-
-            var apiInstance = new AccessRecordsApi();
-            var body = new AccessRecord(); // AccessRecord |
-            var recordId = recordId_example;  // string | The identifier of the access record.
-
-            try
-            {
-                // Update an access record.
-                AccessRecord result = apiInstance.V1RecordsRecordIdPut(body, recordId);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling AccessRecordsApi.V1RecordsRecordIdPut: " + e.Message );
-            }
+            // API Route code
+            // ...
         }
     }
 }
@@ -180,8 +152,6 @@ Class | Method | HTTP request | Description
  - [Authress.SDK.DTO.Identity](docs/Identity.md)
  - [Authress.SDK.DTO.IdentityCollection](docs/IdentityCollection.md)
  - [Authress.SDK.DTO.IdentityRequest](docs/IdentityRequest.md)
- - [Authress.SDK.DTO.InlineResponse200](docs/InlineResponse200.md)
- - [Authress.SDK.DTO.InlineResponse200Account](docs/InlineResponse200Account.md)
  - [Authress.SDK.DTO.PermissionObject](docs/PermissionObject.md)
  - [Authress.SDK.DTO.ResourcePermission](docs/ResourcePermission.md)
  - [Authress.SDK.DTO.ResourcePermissionCollection](docs/ResourcePermissionCollection.md)
