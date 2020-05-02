@@ -8,7 +8,7 @@
     <AssemblyName>Authress.SDK</AssemblyName>
     <PackageId>Authress.SDK</PackageId>
     <PackageTags>Authorization;Authress;Authentication;Security</PackageTags>
-    <PackageIconUrl>https://authress.com/static/img/logo.png</PackageIconUrl>
+    <PackageIconUrl>https://authress.com/app/img/logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/Authress/authress-sdk.cs</PackageProjectUrl>
     <PackageLicense>http://www.apache.org/licenses/LICENSE-2.0</PackageLicense>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
