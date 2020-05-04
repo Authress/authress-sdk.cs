@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 namespace Authress.SDK.Client
 {
@@ -7,6 +8,14 @@ namespace Authress.SDK.Client
     /// </summary>
     public class NotSuccessHttpResponseException : Exception
     {
-        internal NotSuccessHttpResponseException(string message) : base(message) {}
+        /// <summary>
+        /// Status code of response from server that was >= 400.
+        /// </summary>
+        public HttpStatusCode ResponseStatusCode { get; private set; }
+
+        internal NotSuccessHttpResponseException(HttpStatusCode responseStatusCode, string message) : base(message)
+        {
+            ResponseStatusCode = responseStatusCode;
+        }
     }
 }

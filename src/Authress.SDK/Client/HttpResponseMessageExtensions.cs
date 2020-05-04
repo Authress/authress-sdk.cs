@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -15,8 +16,18 @@ namespace Authress.SDK.Client
         {
             if (!message.IsSuccessStatusCode)
             {
+                if (message.StatusCode == HttpStatusCode.PaymentRequired)
+                {
+                    throw new PaymentRequiredException();
+                }
+
+                if ((int)message.StatusCode == 429)
+                {
+                    throw new TooManyRequestsException();
+                }
+
                 var formattedMsg = await FormatErrorMessage(message);
-                throw new NotSuccessHttpResponseException(formattedMsg);
+                throw new NotSuccessHttpResponseException(message.StatusCode, formattedMsg);
             }
         }
 
