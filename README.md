@@ -101,7 +101,3 @@ namespace Microservice
     }
 }
 ```
-
-## Documentation for API Endpoints
-
-[Endpoint Documentation](./docs/README.md)

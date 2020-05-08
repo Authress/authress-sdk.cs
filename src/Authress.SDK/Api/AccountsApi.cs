@@ -21,7 +21,7 @@ namespace Authress.SDK
         public async Task<Account> GetAccount (string accountId)
         {
             // verify the required parameter 'accountId' is set
-            if (accountId == null) throw new ApiException(400, "Missing required parameter 'accountId' when calling V1AccountsAccountIdGet");
+            if (accountId == null) throw new ArgumentNullException("Missing required parameter 'accountId'.");
 
             var path = $"/v1/accounts/{accountId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -72,7 +72,7 @@ namespace Authress.SDK
         public async Task CreateIdentity (IdentityRequest body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1IdentitiesPost");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
 
             var path = "/v1/identities";
             var client = await authressHttpClientProvider.GetHttpClientAsync();

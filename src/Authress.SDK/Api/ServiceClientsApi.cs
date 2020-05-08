@@ -23,9 +23,9 @@ namespace Authress.SDK
         public async Task DeleteAccessKey (string clientId, string keyId)
         {
             // verify the required parameter 'clientId' is set
-            if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdAccessKeysKeyIdDelete");
+            if (clientId == null) throw new ArgumentNullException("Missing required parameter 'clientId'.");
             // verify the required parameter 'keyId' is set
-            if (keyId == null) throw new ApiException(400, "Missing required parameter 'keyId' when calling V1ClientsClientIdAccessKeysKeyIdDelete");
+            if (keyId == null) throw new ArgumentNullException("Missing required parameter 'keyId'.");
 
             var path = $"/v1/clients/{clientId}/access-keys/{keyId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -43,7 +43,7 @@ namespace Authress.SDK
         public async Task<ClientAccessKey> RequestAccessKey (string clientId)
         {
             // verify the required parameter 'clientId' is set
-            if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdAccessKeysPost");
+            if (clientId == null) throw new ArgumentNullException("Missing required parameter 'clientId'.");
 
             var path = $"/v1/clients/{clientId}/access-keys";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -63,7 +63,7 @@ namespace Authress.SDK
         public async Task DeleteClient (string clientId)
         {
             // verify the required parameter 'clientId' is set
-            if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdDelete");
+            if (clientId == null) throw new ArgumentNullException("Missing required parameter 'clientId'.");
 
             var path = $"/v1/clients/{clientId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -81,7 +81,7 @@ namespace Authress.SDK
         public async Task<ServiceClient> GetClient (string clientId)
         {
             // verify the required parameter 'clientId' is set
-            if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdGet");
+            if (clientId == null) throw new ArgumentNullException("Missing required parameter 'clientId'.");
 
             var path = $"/v1/clients/{clientId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -101,9 +101,9 @@ namespace Authress.SDK
         public async Task<ServiceClient> UpdateClient (string clientId, ServiceClient body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ClientsClientIdPut");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
             // verify the required parameter 'clientId' is set
-            if (clientId == null) throw new ApiException(400, "Missing required parameter 'clientId' when calling V1ClientsClientIdPut");
+            if (clientId == null) throw new ArgumentNullException("Missing required parameter 'clientId'.");
 
             var path = $"/v1/clients/{clientId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -138,7 +138,7 @@ namespace Authress.SDK
         public async Task<ServiceClient> CreateClient (ServiceClient body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ClientsPost");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
 
             var path = "/v1/clients";
             var client = await authressHttpClientProvider.GetHttpClientAsync();

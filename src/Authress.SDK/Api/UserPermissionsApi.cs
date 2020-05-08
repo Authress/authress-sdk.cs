@@ -23,9 +23,9 @@ namespace Authress.SDK
         public async Task<UserPermissions> GetUserAuthorizationForResource (string userId, string resourceUri)
         {
             // verify the required parameter 'userId' is set
-            if (userId == null) throw new ApiException(400, "Missing required parameter 'userId' when calling V1UsersUserIdResourcesResourceUriPermissionsGet");
+            if (userId == null) throw new ArgumentNullException("Missing required parameter 'userId'.");
             // verify the required parameter 'resourceUri' is set
-            if (resourceUri == null) throw new ApiException(400, "Missing required parameter 'resourceUri' when calling V1UsersUserIdResourcesResourceUriPermissionsGet");
+            if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
             var path = $"/v1/users/{userId}/resources/{resourceUri}/permissions";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -47,11 +47,11 @@ namespace Authress.SDK
         public async Task<AuthorizationResponse> AuthorizeUser (string userId, string resourceUri, string permission)
         {
             // verify the required parameter 'userId' is set
-            if (userId == null) throw new ApiException(400, "Missing required parameter 'userId' when calling V1UsersUserIdResourcesResourceUriPermissionsPermissionGet");
+            if (userId == null) throw new ArgumentNullException("Missing required parameter 'userId'.");
             // verify the required parameter 'resourceUri' is set
-            if (resourceUri == null) throw new ApiException(400, "Missing required parameter 'resourceUri' when calling V1UsersUserIdResourcesResourceUriPermissionsPermissionGet");
+            if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
             // verify the required parameter 'permission' is set
-            if (permission == null) throw new ApiException(400, "Missing required parameter 'permission' when calling V1UsersUserIdResourcesResourceUriPermissionsPermissionGet");
+            if (permission == null) throw new ArgumentNullException("Missing required parameter 'permission'.");
 
             var path = $"/v1/users/{userId}/resources/{resourceUri}/permissions/{permission}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();

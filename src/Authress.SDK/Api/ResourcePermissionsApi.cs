@@ -38,7 +38,7 @@ namespace Authress.SDK
         public async Task<ResourcePermission> GetResourcePermissions (string resourceUri)
         {
             // verify the required parameter 'resourceUri' is set
-            if (resourceUri == null) throw new ApiException(400, "Missing required parameter 'resourceUri' when calling V1ResourcesResourceUriGet");
+            if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
             var path = $"/v1/resources/{resourceUri}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -58,9 +58,9 @@ namespace Authress.SDK
         public async Task SetResourcePermissions (string resourceUri, ResourcePermission body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ResourcesResourceUriPut");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
             // verify the required parameter 'resourceUri' is set
-            if (resourceUri == null) throw new ApiException(400, "Missing required parameter 'resourceUri' when calling V1ResourcesResourceUriPut");
+            if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
             var path = $"/v1/resources/{resourceUri}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();

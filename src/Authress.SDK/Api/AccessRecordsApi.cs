@@ -20,7 +20,7 @@ namespace Authress.SDK
         public async Task<ClaimResponse> CreateClaim (ClaimRequest body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1ClaimsPost");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
 
             var path = "/v1/claims";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -55,7 +55,7 @@ namespace Authress.SDK
         public async Task<AccessRecord> CreateRecord (AccessRecord body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1RecordsPost");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
 
             var path = "/v1/records";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -74,7 +74,7 @@ namespace Authress.SDK
         public async Task DeleteRecord (string recordId)
         {
             // verify the required parameter 'recordId' is set
-            if (recordId == null) throw new ApiException(400, "Missing required parameter 'recordId' when calling V1RecordsRecordIdDelete");
+            if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
             var path = $"/v1/records/{recordId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -92,7 +92,7 @@ namespace Authress.SDK
         public async Task<AccessRecord> GetRecord (string recordId)
         {
             // verify the required parameter 'recordId' is set
-            if (recordId == null) throw new ApiException(400, "Missing required parameter 'recordId' when calling V1RecordsRecordIdGet");
+            if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
             var path = $"/v1/records/{recordId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
@@ -112,9 +112,9 @@ namespace Authress.SDK
         public async Task<AccessRecord> UpdateRecord (string recordId, AccessRecord body)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ApiException(400, "Missing required parameter 'body' when calling V1RecordsRecordIdPut");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
             // verify the required parameter 'recordId' is set
-            if (recordId == null) throw new ApiException(400, "Missing required parameter 'recordId' when calling V1RecordsRecordIdPut");
+            if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
             var path = $"/v1/records/{recordId}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
