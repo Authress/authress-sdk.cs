@@ -9,7 +9,7 @@ namespace Authress.SDK.Api
     public interface IAccessRecordsApi
     {
         /// <summary>
-        /// Claim a resource by an allowed user Claim a resource by allowing a user to pick an identifier and recieve admin access to that resource if it hasn&#x27;t already been claimed. This only works for resources specifically marked as &lt;strong&gt;CLAIM&lt;/strong&gt;. The result will be a new access record listing that user as the admin for this resource.
+        /// Claim a resource by an allowed user Claim a resource by allowing a user to pick an identifier and receive admin access to that resource if it hasn't already been claimed. This only works for resources specifically marked as "CLAIM". The result will be a new access record listing that user as the admin for this resource.
         /// </summary>
         /// <param name="body"></param>
         /// <returns>ClaimResponse</returns>
