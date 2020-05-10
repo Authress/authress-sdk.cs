@@ -18,7 +18,7 @@ namespace Authress.SDK
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
-        /// <param name="resourceUri">The uri path of a resource to validate, must be URL encoded, uri segments are allowed.</param>
+        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed.</param>
         /// <returns>UserPermissions</returns>
         public async Task<UserPermissions> GetUserAuthorizationForResource (string userId, string resourceUri)
         {
@@ -27,7 +27,7 @@ namespace Authress.SDK
             // verify the required parameter 'resourceUri' is set
             if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
-            var path = $"/v1/users/{userId}/resources/{resourceUri}/permissions";
+            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources/{System.Web.HttpUtility.UrlEncode(resourceUri)}/permissions";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
             {
@@ -41,7 +41,7 @@ namespace Authress.SDK
         /// Check to see if a user has permissions to a resource. Does the user have the specified permissions to the resource?
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
-        /// <param name="resourceUri">The uri path of a resource to validate, must be URL encoded, uri segments are allowed, the resource must be a full path, and permissions are not inhereted by sub resources.</param>
+        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed, the resource must be a full path, and permissions are not inhereted by sub resources.</param>
         /// <param name="permission">Permission to check, &#x27;*&#x27; and scoped permissions can also be checked here.</param>
         /// <returns>AuthorizationResponse</returns>
         public async Task<AuthorizationResponse> AuthorizeUser (string userId, string resourceUri, string permission)
@@ -53,7 +53,7 @@ namespace Authress.SDK
             // verify the required parameter 'permission' is set
             if (permission == null) throw new ArgumentNullException("Missing required parameter 'permission'.");
 
-            var path = $"/v1/users/{userId}/resources/{resourceUri}/permissions/{permission}";
+            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources/{System.Web.HttpUtility.UrlEncode(resourceUri)}/permissions/{System.Web.HttpUtility.UrlEncode(permission)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
             {

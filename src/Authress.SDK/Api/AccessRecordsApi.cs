@@ -76,7 +76,7 @@ namespace Authress.SDK
             // verify the required parameter 'recordId' is set
             if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
-            var path = $"/v1/records/{recordId}";
+            var path = $"/v1/records/{System.Web.HttpUtility.UrlEncode(recordId)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.DeleteAsync(path))
             {
@@ -94,7 +94,7 @@ namespace Authress.SDK
             // verify the required parameter 'recordId' is set
             if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
-            var path = $"/v1/records/{recordId}";
+            var path = $"/v1/records/{System.Web.HttpUtility.UrlEncode(recordId)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
             {
@@ -116,7 +116,7 @@ namespace Authress.SDK
             // verify the required parameter 'recordId' is set
             if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
-            var path = $"/v1/records/{recordId}";
+            var path = $"/v1/records/{System.Web.HttpUtility.UrlEncode(recordId)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.PostAsync(path, body.ToHttpContent()))
             {

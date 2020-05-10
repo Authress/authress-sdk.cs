@@ -33,14 +33,14 @@ namespace Authress.SDK
         /// <summary>
         /// Get a resource permissions object. Permissions can be set globally at a resource level. This will apply to all users in an account.
         /// </summary>
-        /// <param name="resourceUri">The uri path of a resource to validate, must be URL encoded, uri segments are allowed.</param>
+        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed.</param>
         /// <returns>ResourcePermission</returns>
         public async Task<ResourcePermission> GetResourcePermissions (string resourceUri)
         {
             // verify the required parameter 'resourceUri' is set
             if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
-            var path = $"/v1/resources/{resourceUri}";
+            var path = $"/v1/resources/{System.Web.HttpUtility.UrlEncode(resourceUri)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
             {
@@ -53,7 +53,7 @@ namespace Authress.SDK
         /// Update a resource permissions object. Updates the global permissions on a resource. This applies to all users in an account.
         /// </summary>
         /// <param name="body">The contents of the permission to set on the resource. Overwrites existing data.</param>
-        /// <param name="resourceUri">The uri path of a resource to validate, must be URL encoded, uri segments are allowed.</param>
+        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed.</param>
         /// <returns>Object</returns>
         public async Task SetResourcePermissions (string resourceUri, ResourcePermission body)
         {
@@ -62,7 +62,7 @@ namespace Authress.SDK
             // verify the required parameter 'resourceUri' is set
             if (resourceUri == null) throw new ArgumentNullException("Missing required parameter 'resourceUri'.");
 
-            var path = $"/v1/resources/{resourceUri}";
+            var path = $"/v1/resources/{System.Web.HttpUtility.UrlEncode(resourceUri)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.PutAsync(path, body.ToHttpContent()))
             {
