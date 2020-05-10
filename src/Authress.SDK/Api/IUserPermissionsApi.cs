@@ -21,7 +21,7 @@ namespace Authress.SDK.Api
         /// Check to see if a user has permissions to a resource. Does the user have the specified permissions to the resource?
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
-        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed, the resource must be a full path, and permissions are not inhereted by sub resources.</param>
+        /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed.</param>
         /// <param name="permission">Permission to check, &#x27;*&#x27; and scoped permissions can also be checked here.</param>
         /// <returns>Object</returns>
         Task AuthorizeUser (string userId, string resourceUri, string permission);
