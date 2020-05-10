@@ -16,6 +16,11 @@ namespace Authress.SDK.Client
         {
             if (!message.IsSuccessStatusCode)
             {
+                if (message.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new InvalidTokenException();
+                }
+
                 if (message.StatusCode == HttpStatusCode.PaymentRequired)
                 {
                     throw new PaymentRequiredException();

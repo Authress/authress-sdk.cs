@@ -24,6 +24,6 @@ namespace Authress.SDK.Api
         /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed, the resource must be a full path, and permissions are not inhereted by sub resources.</param>
         /// <param name="permission">Permission to check, &#x27;*&#x27; and scoped permissions can also be checked here.</param>
         /// <returns>Object</returns>
-        Task<AuthorizationResponse> AuthorizeUser (string userId, string resourceUri, string permission);
+        Task AuthorizeUser (string userId, string resourceUri, string permission);
     }
 }

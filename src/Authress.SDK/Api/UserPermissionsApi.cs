@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Authress.SDK;
@@ -44,7 +45,7 @@ namespace Authress.SDK
         /// <param name="resourceUri">The uri path of a resource to validate, uri segments are allowed, the resource must be a full path, and permissions are not inhereted by sub resources.</param>
         /// <param name="permission">Permission to check, &#x27;*&#x27; and scoped permissions can also be checked here.</param>
         /// <returns>AuthorizationResponse</returns>
-        public async Task<AuthorizationResponse> AuthorizeUser (string userId, string resourceUri, string permission)
+        public async Task AuthorizeUser (string userId, string resourceUri, string permission)
         {
             // verify the required parameter 'userId' is set
             if (userId == null) throw new ArgumentNullException("Missing required parameter 'userId'.");
@@ -57,8 +58,12 @@ namespace Authress.SDK
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
             {
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new NotAuthorizedException(userId, resourceUri, permission);
+                }
+
                 await response.ThrowIfNotSuccessStatusCode();
-                return await response.Content.ReadAsAsync<AuthorizationResponse>();
             }
         }
     }
