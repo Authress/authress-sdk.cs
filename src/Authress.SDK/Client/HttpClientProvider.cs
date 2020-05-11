@@ -95,4 +95,16 @@ namespace Authress.SDK.Client
             return await base.SendAsync(request, cancellationToken);
         }
     }
+
+    internal class AddUserAgentHeaderHandler : DelegatingHandler
+    {
+        public AddUserAgentHeaderHandler(HttpMessageHandler innerHandler) : base(innerHandler) { }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var version = typeof(HttpClientProvider).Assembly.GetName().Version;
+            request.Headers.TryAddWithoutValidation("UserAgent", $"C# AuthressSDK version: {version}");
+            return await base.SendAsync(request, cancellationToken);
+        }
+    }
 }
