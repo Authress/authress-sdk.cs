@@ -35,7 +35,6 @@ namespace Authress.SDK
                 await response.ThrowIfNotSuccessStatusCode();
                 return await response.Content.ReadAsAsync<UserPermissions>();
             }
-
         }
 
         /// <summary>
@@ -64,6 +63,30 @@ namespace Authress.SDK
                 }
 
                 await response.ThrowIfNotSuccessStatusCode();
+            }
+        }
+
+        /// <summary>
+        /// Get the permissions a user has to resources that match the collection resource. Will return "*" or other top level resources which imply cascading access to child resources. Will not return sub resources of the resources in a collection.
+        /// </summary>
+        /// <param name="userId">The user to check permissions on</param>
+        /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
+        /// <returns>UserResources</returns>
+        /// <returns>AuthorizationResponse</returns>
+        public async Task<UserResources> GetUserResources(string userId, string resourceCollectionUri)
+        {
+            // verify the required parameter 'userId' is set
+            if (userId == null) throw new ArgumentNullException("Missing required parameter 'userId'.");
+
+            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources";
+            if (!string.IsNullOrEmpty(resourceCollectionUri)) {
+                path = $"{path}?{System.Web.HttpUtility.UrlEncode(resourceCollectionUri)}";
+            }
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<UserResources>();
             }
         }
     }

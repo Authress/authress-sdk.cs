@@ -12,7 +12,7 @@ namespace Authress.SDK.DTO
     ///
     /// </summary>
     [DataContract]
-    public class AccessRecordResources
+    public class AccessRecordResource
     {
         /// <summary>
         /// A resource path which can be top level, fully qualified, or end with a *. Parent resources imply permissions to sub resources.

@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Authress.SDK;
+using Authress.SDK.Client;
 
 namespace Authress.SDK.UnitTests
 {
