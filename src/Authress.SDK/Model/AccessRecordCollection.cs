@@ -18,5 +18,12 @@ namespace Authress.SDK.DTO
         [DataMember(Name = "records", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "records")]
         public List<AccessRecord> Records { get; set; }
+
+        /// <summary>
+        /// The Links associated with this collection
+        /// </summary>
+        [DataMember(Name = "links", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "links")]
+        public Links Links { get; set; }
     }
 }

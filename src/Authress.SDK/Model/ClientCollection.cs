@@ -21,5 +21,12 @@ namespace Authress.SDK.DTO
         [DataMember(Name = "clients", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "clients")]
         public List<ServiceClient> Clients { get; set; }
+
+        /// <summary>
+        /// The Links associated with this collection
+        /// </summary>
+        [DataMember(Name = "links", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "links")]
+        public Links Links { get; set; }
     }
 }

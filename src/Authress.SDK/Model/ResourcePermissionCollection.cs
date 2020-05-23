@@ -20,5 +20,12 @@ namespace Authress.SDK.DTO
         [DataMember(Name = "resources", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "resources")]
         public ResourcePermission Resources { get; set; }
+
+        /// <summary>
+        /// The Links associated with this collection
+        /// </summary>
+        [DataMember(Name = "links", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "links")]
+        public Links Links { get; set; }
     }
 }
