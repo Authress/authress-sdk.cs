@@ -23,7 +23,7 @@ namespace Authress.SDK.Client
         /// </summary>
         public string Permission { get; }
 
-        internal NotAuthorizedException(string user, string resourceUri, string permission) : base("User is not have the required permission to access the resource.")
+        internal NotAuthorizedException(string user, string resourceUri, string permission) : base("User does not have the required permission to access the resource.")
         {
             User = user;
             ResourceUri = resourceUri;
