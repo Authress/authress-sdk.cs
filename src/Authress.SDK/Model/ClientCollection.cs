@@ -12,7 +12,7 @@ namespace Authress.SDK.DTO
     /// The collection of a list of clients
     /// </summary>
     [DataContract]
-    public class ClientCollection
+    public class ClientCollection : IPaginationDto
     {
         /// <summary>
         /// A list of clients
@@ -20,7 +20,7 @@ namespace Authress.SDK.DTO
         /// <value>A list of clients</value>
         [DataMember(Name = "clients", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "clients")]
-        public List<ServiceClient> Clients { get; set; }
+        public List<ServiceClient> Clients { get; set; } = new List<ServiceClient>();
 
         /// <summary>
         /// The Links associated with this collection

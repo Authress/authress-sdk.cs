@@ -9,7 +9,7 @@ namespace Authress.SDK.DTO
     /// The collection of a list of clients
     /// </summary>
     [DataContract]
-    public class AccessRecordCollection
+    public class AccessRecordCollection : IPaginationDto
     {
         /// <summary>
         /// A list of clients
@@ -17,7 +17,7 @@ namespace Authress.SDK.DTO
         /// <value>A list of clients</value>
         [DataMember(Name = "records", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "records")]
-        public List<AccessRecord> Records { get; set; }
+        public List<AccessRecord> Records { get; set; } = new List<AccessRecord>{};
 
         /// <summary>
         /// The Links associated with this collection
