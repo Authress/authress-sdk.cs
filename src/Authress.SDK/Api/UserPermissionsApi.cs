@@ -80,7 +80,7 @@ namespace Authress.SDK
 
             var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources";
             if (!string.IsNullOrEmpty(resourceCollectionUri)) {
-                path = $"{path}?{System.Web.HttpUtility.UrlEncode(resourceCollectionUri)}";
+                path = $"{path}?resourceUri={System.Web.HttpUtility.UrlEncode(resourceCollectionUri)}";
             }
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
