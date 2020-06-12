@@ -39,13 +39,13 @@ namespace Authress.SDK.DTO
         /// </summary>
         [DataMember(Name = "href", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "href")]
-        public string href { get; set; }
+        public string Href { get; set; }
 
         /// <summary>
         /// The optional link relation only specified if the link relation is not an IANA prespecified type.
         /// </summary>
         [DataMember(Name = "rel", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "rel")]
-        public string rel { get; set; }
+        public string Rel { get; set; }
     }
 }

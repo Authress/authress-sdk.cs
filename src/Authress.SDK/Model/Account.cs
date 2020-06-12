@@ -48,6 +48,6 @@ namespace Authress.SDK.DTO
         /// </summary>
         [DataMember(Name = "links", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "links")]
-        public Object Links { get; set; }
+        public Links Links { get; set; }
     }
 }

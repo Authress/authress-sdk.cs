@@ -12,14 +12,14 @@ namespace Authress.SDK.DTO
     /// A collection of resource permissions that have been defined.
     /// </summary>
     [DataContract]
-    public class ResourcePermissionCollection
+    public class ResourcePermissionCollection : IPaginationDto
     {
         /// <summary>
         /// Gets or Sets Resources
         /// </summary>
         [DataMember(Name = "resources", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "resources")]
-        public ResourcePermission Resources { get; set; }
+        public List<ResourcePermission> Resources { get; set; } = new List<ResourcePermission>();
 
         /// <summary>
         /// The Links associated with this collection

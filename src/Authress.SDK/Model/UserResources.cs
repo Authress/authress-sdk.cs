@@ -12,7 +12,7 @@ namespace Authress.SDK.DTO
     /// A collect of resource uri that a user has access to.
     /// </summary>
     [DataContract]
-    public class UserResources
+    public class UserResources : IPaginationDto
     {
         /// <summary>
         /// Gets or Sets UserId
@@ -27,6 +27,13 @@ namespace Authress.SDK.DTO
         /// <value>A list of the permissions</value>
         [DataMember(Name = "resources", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "resources")]
-        public List<AccessRecordResource> Resources { get; set; }
+        public List<AccessRecordResource> Resources { get; set; } = new List<AccessRecordResource>();
+
+        /// <summary>
+        /// The Links associated with this collection
+        /// </summary>
+        [DataMember(Name = "links", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "links")]
+        public Links Links { get; set; }
     }
 }
