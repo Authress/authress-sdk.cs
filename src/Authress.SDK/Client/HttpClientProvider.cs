@@ -60,6 +60,7 @@ namespace Authress.SDK.Client
 
                 // create the inner handlers for the cache handler, the outermost handler is called first. (https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers)
                 HttpMessageHandler outermostHandler = new HttpClientHandler { AllowAutoRedirect = true };
+                outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
                 outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider);
 
                 // create the client and assign it to the member variable for future access, create a tmp client so that the client is fully initialized before setting "client" property.
@@ -106,5 +107,31 @@ namespace Authress.SDK.Client
             request.Headers.TryAddWithoutValidation("User-Agent", $"C# AuthressSDK version: {version}");
             return await base.SendAsync(request, cancellationToken);
         }
+    }
+
+    internal class RewriteBaseUrlHandler : DelegatingHandler
+    {
+        private readonly Uri baseUrl;
+
+        public RewriteBaseUrlHandler(HttpMessageHandler innerHandler, string baseUrl) : base(innerHandler)
+        {
+            this.baseUrl = new Uri(baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/");
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var builder = new UriBuilder(baseUrl.Scheme, baseUrl.Host, baseUrl.Port)
+            {
+                Path = MergePath(baseUrl.AbsolutePath, request.RequestUri.AbsolutePath),
+                Query = request.RequestUri.Query,
+                Fragment = request.RequestUri.Fragment
+            };
+
+            request.RequestUri = builder.Uri;
+            return await base.SendAsync(request, cancellationToken);
+        }
+
+        private static string MergePath(string baseUrlPath, string requestPath) =>
+            requestPath.StartsWith(baseUrlPath) ? requestPath : baseUrlPath + requestPath.Substring(1);
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Authress SDK</Description>
     <AssemblyTitle>Authress SDK</AssemblyTitle>
@@ -31,4 +31,9 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.5.1"/>
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.7"/>
   </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+        <_Parameter1>Authress.SDK.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+</ItemGroup>
 </Project>
