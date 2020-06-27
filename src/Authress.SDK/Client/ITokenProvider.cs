@@ -71,7 +71,7 @@ namespace Authress.SDK
             var jwtManager = new JwtSecurityTokenHandler();
             var signingOptions = new SecurityTokenDescriptor
             {
-                Issuer = $"https://api.authress.io/v1/clients/{accessKey.ClientId}",
+                Issuer = $"https://api.authress.io/v1/clients/{System.Web.HttpUtility.UrlEncode(accessKey.ClientId)}",
                 Audience = accessKey.Audience,
                 NotBefore = DateTime.UtcNow,
                 Expires = expiryDate,
