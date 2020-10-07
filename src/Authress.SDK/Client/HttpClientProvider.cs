@@ -5,9 +5,15 @@ using System.Threading.Tasks;
 
 namespace Authress.SDK.Client
 {
-    internal interface IHttpClientProvider
+    /// <summary>
+    /// Customize the base handler used when accessing Authress through the HttpClientProvider. Everytime a new client is generated (which usually only happens once), the base handler factory will be called.
+    /// </summary>
+    public interface IHttpClientHandlerFactory
     {
-        HttpClient Create(HttpMessageHandler messageHandler);
+        /// <summary>
+        /// Creates the base client handler when a new HttpClient is needed.
+        /// </summary>
+        HttpClientHandler Create();
     }
 
     /// <summary>
@@ -32,13 +38,14 @@ namespace Authress.SDK.Client
         private HttpClient clientProxy;
         private readonly HttpClientSettings settings;
         private readonly ITokenProvider tokenProvider;
+        private readonly IHttpClientHandlerFactory customHttpClientHandlerFactory;
 
-        public HttpClientProvider(HttpClientSettings settings, ITokenProvider tokenProvider)
+        public HttpClientProvider(HttpClientSettings settings, ITokenProvider tokenProvider, IHttpClientHandlerFactory customHttpClientHandlerFactory = null)
         {
             this.settings = settings;
             this.tokenProvider = tokenProvider;
+            this.customHttpClientHandlerFactory = customHttpClientHandlerFactory;
         }
-
 
         public async Task<HttpClient> GetHttpClientAsync()
         {
@@ -59,9 +66,10 @@ namespace Authress.SDK.Client
                 }
 
                 // create the inner handlers for the cache handler, the outermost handler is called first. (https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers)
-                HttpMessageHandler outermostHandler = new HttpClientHandler { AllowAutoRedirect = true };
+                HttpMessageHandler outermostHandler = customHttpClientHandlerFactory?.Create() ?? new HttpClientHandler { AllowAutoRedirect = true };
                 outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
                 outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider);
+                outermostHandler = new AddUserAgentHeaderHandler(outermostHandler);
 
                 // create the client and assign it to the member variable for future access, create a tmp client so that the client is fully initialized before setting "client" property.
                 clientProxy = new HttpClient(outermostHandler);
