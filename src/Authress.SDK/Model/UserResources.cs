@@ -35,5 +35,10 @@ namespace Authress.SDK.DTO
         [DataMember(Name = "links", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "links")]
         public Links Links { get; set; }
+
+        /// <summary>
+        /// If the user has access to all sub-resources, then instead of resources being a list, this property will be populated `true`.
+        /// </summary>
+        public bool AccessToAllSubResources { get; set; } = false;
     }
 }

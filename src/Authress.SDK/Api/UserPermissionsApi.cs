@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -71,20 +72,41 @@ namespace Authress.SDK
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
+        /// <param name="permission">A required ALLOW action to check for. Resources a user does not have this permission will not be returned.</param>
         /// <returns>UserResources</returns>
         /// <returns>AuthorizationResponse</returns>
-        public async Task<UserResources> GetUserResources(string userId, string resourceCollectionUri)
+        public async Task<UserResources> GetUserResources(string userId, string resourceCollectionUri, string permission)
         {
             // verify the required parameter 'userId' is set
-            if (userId == null) throw new ArgumentNullException("Missing required parameter 'userId'.");
-
-            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources";
-            if (!string.IsNullOrEmpty(resourceCollectionUri)) {
-                path = $"{path}?resourceUri={System.Web.HttpUtility.UrlEncode(resourceCollectionUri)}";
+            if (userId == null)
+            {
+                throw new ArgumentNullException("Missing required parameter 'userId'.");
             }
+
+            var queryParams = new Dictionary<string, string>
+            {
+                { "resourceUri", resourceCollectionUri },
+                { "permissions", permission }
+            };
+
+            var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
+                .Select(pair => $"{pair.Key}={System.Web.HttpUtility.UrlEncode(pair.Value)}").Aggregate((next, total) => $"{total}&{next}");
+            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources?{queryString}";
+
             var client = await authressHttpClientProvider.GetHttpClientAsync();
+
+            var authorizeUserAsync = AuthorizeUser(userId, resourceCollectionUri, permission);
             using (var response = await client.GetAsync(path))
             {
+                try
+                {
+                    await authorizeUserAsync;
+                    return new UserResources { UserId = userId, AccessToAllSubResources = true, Resources = null };
+                }
+                catch (Exception)
+                {
+                    /* Ignore if the user doesn't have permission or if there is a problem, instead fallback to looking up explicit resources by permission */
+                }
                 await response.ThrowIfNotSuccessStatusCode();
                 return await response.Content.ReadAsAsync<UserResources>();
             }

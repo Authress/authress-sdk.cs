@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Authress.SDK.DTO;
 
@@ -14,8 +15,9 @@ namespace Authress.SDK.Api
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
+        /// <param name="permission">A required ALLOW action to check for. Resources a user does not have this permission will not be returned.</param>
         /// <returns>UserResources</returns>
-        Task<UserResources> GetUserResources (string userId, string resourceCollectionUri);
+        Task<UserResources> GetUserResources (string userId, string resourceCollectionUri, string permission);
 
         /// <summary>
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
