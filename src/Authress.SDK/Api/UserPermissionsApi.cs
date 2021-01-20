@@ -68,7 +68,7 @@ namespace Authress.SDK
         }
 
         /// <summary>
-        /// Get the permissions a user has to resources that match the collection resource. Will return "*" or other top level resources which imply cascading access to child resources. Will not return sub resources of the resources in a collection.
+        /// Get the users resources. Get the users resources. This result is a list of resource uris that a user has an explicit permission to, a user with * access to all sub resources will return an empty list and {AccessToAllSubResources} will be populated. The list will be paginated.
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
