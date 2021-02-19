@@ -33,5 +33,6 @@ namespace Authress.SDK
         public String ClientId { get; set; }
         public String KeyId { get; set; }
         public String PrivateKey { get; set; }
+        public String Algorithm { get; set; } = "RS256";
     }
 }
