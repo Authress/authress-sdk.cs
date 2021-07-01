@@ -44,6 +44,14 @@ namespace Authress.SDK.DTO
         public List<AccessRecordUsers> Users { get; set; }
 
         /// <summary>
+        /// The list of groups this record applies to. Users in these groups will be receive access to the resources listed.
+        /// </summary>
+        /// <value>The list of groups this record applies to. Users in these groups will be receive access to the resources listed.</value>
+        [DataMember(Name = "groups", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "groups")]
+        public List<AccessRecordGroup> Groups { get; set; } = new List<AccessRecordGroup>();
+
+        /// <summary>
         /// The list of admin that can edit this record even if they do not have global record edit permissions.
         /// </summary>
         /// <value>The list of admin that can edit this record even if they do not have global record edit permissions.</value>
