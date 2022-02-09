@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+    - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: 3.1.x
@@ -25,11 +25,18 @@ jobs:
       run: dotnet restore
     - name: Run build
       run: dotnet build
-    - name: Test and Deploy
+    - name: Test
+      run: dotnet test -c Release || exit 1
+    - name: Deploy
       if: github.repository_owner == 'Authress' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.event_name == 'push'
-      run: ./deploy.sh
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      run: |
+        branchId="${GITHUB_REF/refs\/heads\/release\//}"
+        buildNumber="${branchId}.${GITHUB_RUN_NUMBER}"
+        sed "s/0.0.1/${buildNumber}/g" src/Authress.SDK/*.csproj -i
+        dotnet pack -c Release -o ../../artifacts || exit 1
+        dotnet nuget push artifacts/Authress.SDK.${buildNumber}.nupkg -s "https://api.nuget.org/v3/index.json" -k "$NUGET_KEY"
 
     - name: Create Github Release and Tag
       if: github.repository_owner == 'Authress' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.event_name == 'push'
