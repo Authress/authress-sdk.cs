@@ -2,25 +2,26 @@
   <PropertyGroup>
     <Description>UnitTests for Authress SDK</Description>
     <Authors>Authress Developers</Authors>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
     <AssemblyName>Authress.SDK.UnitTests</AssemblyName>
     <PackageId>Authress.SDK.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AssetTargetFallback>$(AssetTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8;dotnet</AssetTargetFallback>
-    <RuntimeFrameworkVersion>3.1.0</RuntimeFrameworkVersion>
+    <!-- <RuntimeFrameworkVersion>3.1.0</RuntimeFrameworkVersion> -->
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Authress.SDK\Authress.SDK.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="FluentAssertions" Version="5.3.2" />
+    <PackageReference Include="System.Runtime" Version="*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="*" />
+    <PackageReference Include="FluentAssertions" Version="*" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="moq" Version="4.8.2" />
-    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
-    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="moq" Version="*" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="*" />
+    <PackageReference Include="XunitXml.TestLogger" Version="*" />
   </ItemGroup>
 </Project>

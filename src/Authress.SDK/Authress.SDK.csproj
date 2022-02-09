@@ -8,7 +8,7 @@
     <AssemblyName>Authress.SDK</AssemblyName>
     <PackageId>Authress.SDK</PackageId>
     <PackageTags>Authorization;Authress;Authentication;Security</PackageTags>
-    <PackageIconUrl>https://authress.com/app/img/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackageProjectUrl>https://github.com/Authress/authress-sdk.cs</PackageProjectUrl>
     <PackageLicense>http://www.apache.org/licenses/LICENSE-2.0</PackageLicense>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -21,6 +21,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="../../images/logo.png" Pack="true" PackagePath="."/>
     <None Include="../../README.md" pack="true" PackagePath="."/>
   </ItemGroup>
   <ItemGroup>

@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 5.0.300
 
     - name: Install packages
       run: dotnet restore
@@ -35,7 +35,7 @@ jobs:
         branchId="${GITHUB_REF/refs\/heads\/release\//}"
         buildNumber="${branchId}.${GITHUB_RUN_NUMBER}"
         sed "s/0.0.1/${buildNumber}/g" src/Authress.SDK/*.csproj -i
-        dotnet pack -c Release -o ../../artifacts || exit 1
+        dotnet pack -c Release -o artifacts || exit 1
         dotnet nuget push artifacts/Authress.SDK.${buildNumber}.nupkg -s "https://api.nuget.org/v3/index.json" -k "$NUGET_KEY"
 
     - name: Create Github Release and Tag
