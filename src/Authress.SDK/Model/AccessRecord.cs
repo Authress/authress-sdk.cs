@@ -1,12 +1,9 @@
-using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Authress.SDK.DTO
 {
-
     /// <summary>
     /// The access record which links users to roles.
     /// </summary>
