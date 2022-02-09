@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+    - main
+    - master
+    - 'release/**'
+  pull_request:
+    branches:
+    - main
+    - master
+    - 'release/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Install packages
+      run: dotnet restore
+    - name: Run build
+      run: dotnet build
+    - name: Test and Deploy
+      if: github.repository_owner == 'Authress' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.event_name == 'push'
+      run: ./deploy.sh
+      env:
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+
+    - name: Create Github Release and Tag
+      if: github.repository_owner == 'Authress' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.event_name == 'push'
+      run: |
+        git tag ${GITHUB_REF/refs\/heads\/release\//}.$GITHUB_RUN_NUMBER
+        git push origin ${GITHUB_REF/refs\/heads\/release\//}.$GITHUB_RUN_NUMBER

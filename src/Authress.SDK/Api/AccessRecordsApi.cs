@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Authress.SDK.Api;
 using Authress.SDK.Client;
@@ -37,7 +39,6 @@ namespace Authress.SDK
         /// <returns>AccessRecord</returns>
         public async Task<AccessRecordCollection> GetRecords ()
         {
-
             var path = "/v1/records";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
             using (var response = await client.GetAsync(path))
@@ -122,6 +123,162 @@ namespace Authress.SDK
             {
                 await response.ThrowIfNotSuccessStatusCode();
                 return await response.Content.ReadAsAsync<AccessRecord>();
+            }
+        }
+
+        /// <summary>
+        /// Create access request Specify a request in the form of an access record that an admin can approve.
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns>AccessRequest</returns>
+        public async Task<AccessRequest> CreateRequest(AccessRequest body)
+        {
+            // verify the required parameter 'body' is set
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+
+            var path = "/v1/requests";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<AccessRequest>();
+            }
+        }
+
+        /// <summary>
+        /// Deletes access request Remove an access request.
+        /// </summary>
+        /// <param name="requestId">The identifier of the access request.</param>
+        /// <returns></returns>
+        public async Task DeleteRequest(string requestId)
+        {
+            // verify the required parameter 'recordId' is set
+            if (requestId == null) throw new ArgumentNullException("Missing required parameter 'requestId'.");
+
+            var path = $"/v1/requests/{System.Web.HttpUtility.UrlEncode(requestId)}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.DeleteAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+            }
+        }
+
+        /// <summary>
+        /// Retrieve access request Access request contain information requesting permissions for users to resources.
+        /// </summary>
+        /// <param name="requestId">The identifier of the access request.</param>
+        /// <returns>AccessRequest</returns>
+        public async Task<AccessRequest> GetRequest(string requestId)
+        {
+            if (requestId == null) throw new ArgumentNullException("Missing required parameter 'requestId'.");
+
+            var path = $"/v1/requests/{System.Web.HttpUtility.UrlEncode(requestId)}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<AccessRequest>();
+            }
+        }
+
+        /// <summary>
+        /// List access requests Returns a paginated request list. Only requests the user has access to are returned. This query resource is meant for administrative actions only, therefore has a lower rate limit tier than user permissions related resources.
+        /// </summary>
+        /// <param name="limit">Max number of results to return (optional, default to 20)</param>
+        /// <param name="cursor">Continuation cursor for paging (will automatically be set) (optional)</param>
+        /// <param name="status">Filter requests by their current status. (optional)</param>
+        /// <returns>AccessRequestCollection</returns>
+        public async Task<AccessRequestCollection> GetRequests(int? limit = null, string cursor = null, string status = null)
+        {
+            var queryParams = new Dictionary<string, string?>
+            {
+                { "limit", limit == null ? string.Empty : limit.ToString() },
+                { "status", status },
+                { "cursor", cursor }
+            };
+
+            var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
+                .Select(pair => $"{pair.Key}={System.Web.HttpUtility.UrlEncode(pair.Value)}").Aggregate((next, total) => $"{total}&{next}");
+            var path = $"/v1/requests?{queryString}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<AccessRequestCollection>();
+            }
+        }
+
+        /// <summary>
+        /// Approve or deny access request Updates an access request, approving it or denying it.
+        /// </summary>
+        /// <param name="requestId">The identifier of the access request.</param>
+        /// <param name="body"></param>
+        /// <returns>AccessRequest</returns>
+        public async Task<AccessRequest> RespondToAccessRequest(string requestId, AccessRequestResponse body)
+        {
+            if (requestId == null) throw new ArgumentNullException("Missing required parameter 'requestId'.");
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+
+            var path = $"/v1/requests/{System.Web.HttpUtility.UrlEncode(requestId)}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PatchAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<AccessRequest>();
+            }
+        }
+
+        /// <summary>
+        /// Create user invite Invites are used to easily assign permissions to users that have not been created in your identity provider yet. 1. This generates an invite record. 2. Send the invite ID to the user. 3. Log the user in. 4. As the user PATCH the /invite/{inviteId} endpoint 5. This accepts the invite.         When the user accepts the invite they will automatically receive the permissions assigned in the Invite. Invites automatically expire after 7 days.
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns>Invite</returns>
+        public async Task<Invite> CreateInvite(Invite body)
+        {
+            // verify the required parameter 'body' is set
+            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+
+            var path = "/v1/invites";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<Invite>();
+            }
+        }
+
+        /// <summary>
+        /// Accept invite Accepts an invite by claiming this invite by this user. The user access token used for this request will gain the permissions associated with the invite.
+        /// </summary>
+        /// <param name="inviteId">The identifier of the invite.</param>
+        /// <returns>Account</returns>
+        public async Task<Account> RespondToInvite(string inviteId)
+        {
+            if (inviteId == null) throw new ArgumentNullException("Missing required parameter 'inviteId'.");
+
+            var path = $"/v1/invites/{System.Web.HttpUtility.UrlEncode(inviteId)}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.PatchAsync(path, new Invite().ToHttpContent()))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<Account>();
+            }
+        }
+
+        /// <summary>
+        /// Delete invite Deletes an invite.
+        /// </summary>
+        /// <param name="inviteId">The identifier of the invite.</param>
+        /// <returns></returns>
+        public async Task DeleteInvite(string inviteId)
+        {
+            if (inviteId == null) throw new ArgumentNullException("Missing required parameter 'inviteId'.");
+
+            var path = $"/v1/invites/{System.Web.HttpUtility.UrlEncode(inviteId)}";
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.DeleteAsync(path))
+            {
+                await response.ThrowIfNotSuccessStatusCode();
             }
         }
     }

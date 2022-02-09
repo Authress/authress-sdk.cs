@@ -6,10 +6,10 @@ namespace Authress.SDK.DTO
 {
 
     /// <summary>
-    /// The collection of a list of access records
+    /// A collection of access requests
     /// </summary>
     [DataContract]
-    public class AccessRecordCollection : IPaginationDto
+    public class AccessRequestCollection : IPaginationDto
     {
         /// <summary>
         /// A list of clients
@@ -17,7 +17,7 @@ namespace Authress.SDK.DTO
         /// <value>A list of clients</value>
         [DataMember(Name = "records", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "records")]
-        public List<AccessRecord> Records { get; set; } = new List<AccessRecord>{};
+        public List<AccessRequest> Records { get; set; } = new List<AccessRequest>{};
 
         /// <summary>
         /// The Links associated with this collection

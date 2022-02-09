@@ -4,7 +4,7 @@
     <AssemblyTitle>Authress SDK</AssemblyTitle>
     <Version>0.0.1</Version>
     <Authors>Authress Developers</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <AssemblyName>Authress.SDK</AssemblyName>
     <PackageId>Authress.SDK</PackageId>
     <PackageTags>Authorization;Authress;Authentication;Security</PackageTags>
