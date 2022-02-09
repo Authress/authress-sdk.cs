@@ -190,7 +190,7 @@ namespace Authress.SDK
         /// <returns>AccessRequestCollection</returns>
         public async Task<AccessRequestCollection> GetRequests(int? limit = null, string cursor = null, string status = null)
         {
-            var queryParams = new Dictionary<string, string?>
+            var queryParams = new Dictionary<string, string>
             {
                 { "limit", limit == null ? string.Empty : limit.ToString() },
                 { "status", status },
