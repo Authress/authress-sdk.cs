@@ -19,8 +19,12 @@ namespace Authress.SDK.Api
         /// <summary>
         /// Get all account records. Returns a paginated records list for the account. Only records the user has access to are returned.
         /// </summary>
-        /// <returns>AccessRecord</returns>
-        Task<AccessRecordCollection> GetRecords ();
+        /// <param name="limit">Max number of results to return</param>
+        /// <param name="cursor">Continuation cursor for paging (will automatically be set)</param>
+        /// <param name="filter">Filter to search records by. This is a case insensitive search through every text field.</param>
+        /// <param name="status">Filter records by their current status.</param>
+        /// <returns>AccessRecordCollection</returns>
+        Task<AccessRecordCollection> GetRecords (int? limit = null, string cursor = null, string filter = null, string status = null);
         /// <summary>
         /// Create a new access record Specify user roles for specific resources.
         /// </summary>
