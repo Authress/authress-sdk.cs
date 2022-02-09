@@ -20,11 +20,10 @@ namespace Authress.SDK.Api
         /// Get all account records. Returns a paginated records list for the account. Only records the user has access to are returned.
         /// </summary>
         /// <param name="limit">Max number of results to return</param>
-        /// <param name="cursor">Continuation cursor for paging (will automatically be set)</param>
         /// <param name="filter">Filter to search records by. This is a case insensitive search through every text field.</param>
         /// <param name="status">Filter records by their current status.</param>
         /// <returns>AccessRecordCollection</returns>
-        Task<AccessRecordCollection> GetRecords (int? limit = null, string cursor = null, string filter = null, string status = null);
+        Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, string status = null);
         /// <summary>
         /// Create a new access record Specify user roles for specific resources.
         /// </summary>
@@ -91,10 +90,9 @@ namespace Authress.SDK.Api
         /// Returns a paginated request list. Only requests the user has access to are returned. This query resource is meant for administrative actions only, therefore has a lower rate limit tier than user permissions related resources.
         /// </remarks>
         /// <param name="limit">Max number of results to return (optional, default to 20)</param>
-        /// <param name="cursor">Continuation cursor for paging (will automatically be set) (optional)</param>
         /// <param name="status">Filter records by their current status. (optional)</param>
         /// <returns>AccessRequestCollection</returns>
-        Task<AccessRequestCollection> GetRequests (int? limit = null, string cursor = null, string status = null);
+        Task<AccessRequestCollection> GetRequests (int? limit = null, string status = null);
 
         /// <summary>
         /// Approve or deny access request

@@ -37,17 +37,15 @@ namespace Authress.SDK
         /// List account records Returns a paginated records list for the account. Only records the user has access to are returned. This query resource is meant for administrative actions only, therefore has a lower rate limit tier than user permissions related resources.
         /// </summary>
         /// <param name="limit">Max number of results to return</param>
-        /// <param name="cursor">Continuation cursor for paging (will automatically be set)</param>
         /// <param name="filter">Filter to search records by. This is a case insensitive search through every text field.</param>
         /// <param name="status">Filter records by their current status.</param>
         /// <returns>AccessRecordCollection</returns>
-        public async Task<AccessRecordCollection> GetRecords (int? limit = null, string cursor = null, string filter = null, string status = null)
+        public async Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, string status = null)
         {
             var queryParams = new Dictionary<string, string>
             {
                 { "limit", limit == null ? string.Empty : limit.ToString() },
                 { "status", status },
-                { "cursor", cursor },
                 { "filter", filter }
             };
 
@@ -199,16 +197,14 @@ namespace Authress.SDK
         /// List access requests Returns a paginated request list. Only requests the user has access to are returned. This query resource is meant for administrative actions only, therefore has a lower rate limit tier than user permissions related resources.
         /// </summary>
         /// <param name="limit">Max number of results to return (optional, default to 20)</param>
-        /// <param name="cursor">Continuation cursor for paging (will automatically be set) (optional)</param>
         /// <param name="status">Filter requests by their current status. (optional)</param>
         /// <returns>AccessRequestCollection</returns>
-        public async Task<AccessRequestCollection> GetRequests(int? limit = null, string cursor = null, string status = null)
+        public async Task<AccessRequestCollection> GetRequests(int? limit = null, string status = null)
         {
             var queryParams = new Dictionary<string, string>
             {
                 { "limit", limit == null ? string.Empty : limit.ToString() },
-                { "status", status },
-                { "cursor", cursor }
+                { "status", status }
             };
 
             var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
