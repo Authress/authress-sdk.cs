@@ -13,25 +13,21 @@ namespace Authress.SDK.UnitTests
     {
         [Fact]
         public async Task AppendsRequestPath() =>
-            (await GetRewrittenUrl("https://example.com", "/request-path"))
-            .Should().Be("https://example.com/request-path");
+            (await GetRewrittenUrl("https://example.com", "/request-path")).Should().Be("https://example.com/request-path");
 
         [Theory]
         [InlineData("/relative-path")]
         [InlineData("relative-path")]
         public async Task PreservesBaseUrlPath(string relativePath) =>
-            (await GetRewrittenUrl("https://example.com/path/", relativePath))
-            .Should().Be("https://example.com/path/relative-path");
+            (await GetRewrittenUrl("https://example.com/path/", relativePath)).Should().Be("https://example.com/path/relative-path");
 
         [Fact]
         public async Task PassesQuery() =>
-            (await GetRewrittenUrl("https://example.com", "/path?paramName=paramValue"))
-            .Should().Be("https://example.com/path?paramName=paramValue");
+            (await GetRewrittenUrl("https://example.com", "/path?paramName=paramValue")).Should().Be("https://example.com/path?paramName=paramValue");
 
         [Fact]
         public async Task PassesFragment() =>
-            (await GetRewrittenUrl("https://example.com", "/path#fragment"))
-            .Should().Be("https://example.com/path#fragment");
+            (await GetRewrittenUrl("https://example.com", "/path#fragment")).Should().Be("https://example.com/path#fragment");
 
         private static async Task<string> GetRewrittenUrl(string baseUrl, string relativePath)
         {

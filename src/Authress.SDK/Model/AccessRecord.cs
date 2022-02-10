@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Authress.SDK.DTO
 {
@@ -10,6 +11,25 @@ namespace Authress.SDK.DTO
     [DataContract]
     public class AccessRecord
     {
+        /// <summary>
+        /// Current status of the access record.
+        /// </summary>
+        /// <value>Current status of the access record.</value>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum StatusEnum
+        {
+            /// <summary>
+            /// Enum ACTIVE for value: ACTIVE
+            /// </summary>
+            [EnumMember(Value = "ACTIVE")]
+            ACTIVE = 1,
+            /// <summary>
+            /// Enum DELETED for value: DELETED
+            /// </summary>
+            [EnumMember(Value = "DELETED")]
+            DELETED = 2
+        }
+
         /// <summary>
         /// Gets or Sets RecordId
         /// </summary>
@@ -24,6 +44,13 @@ namespace Authress.SDK.DTO
         [DataMember(Name = "name", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Current status of the access record.
+        /// </summary>
+        /// <value>Current status of the access request.</value>
+        [DataMember(Name="status", EmitDefaultValue=false)]
+        public StatusEnum? Status { get; set; }
 
         /// <summary>
         /// Gets or Sets Account

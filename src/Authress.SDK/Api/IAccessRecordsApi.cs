@@ -23,7 +23,7 @@ namespace Authress.SDK.Api
         /// <param name="filter">Filter to search records by. This is a case insensitive search through every text field.</param>
         /// <param name="status">Filter records by their current status.</param>
         /// <returns>AccessRecordCollection</returns>
-        Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, string status = null);
+        Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, AccessRecord.StatusEnum? status = null);
         /// <summary>
         /// Create a new access record Specify user roles for specific resources.
         /// </summary>
@@ -92,7 +92,7 @@ namespace Authress.SDK.Api
         /// <param name="limit">Max number of results to return (optional, default to 20)</param>
         /// <param name="status">Filter records by their current status. (optional)</param>
         /// <returns>AccessRequestCollection</returns>
-        Task<AccessRequestCollection> GetRequests (int? limit = null, string status = null);
+        Task<AccessRequestCollection> GetRequests (int? limit = null, AccessRequest.StatusEnum? status = null);
 
         /// <summary>
         /// Approve or deny access request
