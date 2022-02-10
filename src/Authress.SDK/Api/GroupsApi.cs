@@ -80,7 +80,7 @@ namespace Authress.SDK
         {
             var queryParams = new Dictionary<string, string>
             {
-                { "limit", limit == null ? string.Empty : limit.ToString() },
+                { "limit", limit?.ToString() },
                 { "filter", filter }
             };
 

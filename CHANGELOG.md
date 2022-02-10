@@ -3,7 +3,7 @@ This is the changelog for [Authress SDK](readme.md).
 
 ## 2.0 ##
 * Renamed `AccessRecordStatements` and other models that end with `S` but aren't actually plural to be `AccessRecordStatement` (without the `S`).
-* Use typed enum `Status` for method inputs instead of string values.
+* All APIs are now part of sub instance properties of the `AuthressClient` class, `AccessClient.AccessRecords` and `AccessClient.ServiceClients`, etc..
 
 ## 1.2 ##
 * Upgrade to using core 3.1.

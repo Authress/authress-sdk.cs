@@ -40,12 +40,12 @@ namespace Authress.SDK
         /// <param name="filter">Filter to search records by. This is a case insensitive search through every text field.</param>
         /// <param name="status">Filter records by their current status.</param>
         /// <returns>AccessRecordCollection</returns>
-        public async Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, string status = null)
+        public async Task<AccessRecordCollection> GetRecords (int? limit = null, string filter = null, AccessRecord.StatusEnum? status = AccessRecord.StatusEnum.ACTIVE)
         {
             var queryParams = new Dictionary<string, string>
             {
-                { "limit", limit == null ? string.Empty : limit.ToString() },
-                { "status", status },
+                { "limit", limit?.ToString() },
+                { "status", status?.ToString() },
                 { "filter", filter }
             };
 
@@ -199,12 +199,12 @@ namespace Authress.SDK
         /// <param name="limit">Max number of results to return (optional, default to 20)</param>
         /// <param name="status">Filter requests by their current status. (optional)</param>
         /// <returns>AccessRequestCollection</returns>
-        public async Task<AccessRequestCollection> GetRequests(int? limit = null, string status = null)
+        public async Task<AccessRequestCollection> GetRequests(int? limit = null, AccessRequest.StatusEnum? status = AccessRequest.StatusEnum.OPEN)
         {
             var queryParams = new Dictionary<string, string>
             {
-                { "limit", limit == null ? string.Empty : limit.ToString() },
-                { "status", status }
+                { "limit", limit?.ToString() },
+                { "status", status?.ToString() }
             };
 
             var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
