@@ -25,7 +25,7 @@
     <None Include="../../README.md" pack="true" PackagePath="."/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.*"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.*"/>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.*"/>
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.*"/>
     <PackageReference Include="Portable.BouncyCastle" Version="1.*"/>
