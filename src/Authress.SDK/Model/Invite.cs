@@ -7,7 +7,7 @@ namespace Authress.SDK.DTO
     /// The user invite used to invite users to your application or to Authress as an admin.
     /// </summary>
     [DataContract]
-    public partial class Invite
+    public class Invite
     {
         /// <summary>
         /// The unique identifier for the invite. Use this ID to accept the invite.
