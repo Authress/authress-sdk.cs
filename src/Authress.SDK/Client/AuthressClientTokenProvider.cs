@@ -32,21 +32,25 @@ namespace Authress.SDK
         /// </summary>
         public AuthressClientTokenProvider(string accessKeyBase64, string authressCustomDomain = null)
         {
-            this.authressCustomDomain = (authressCustomDomain ?? "api.authress.io").Replace("https://", "");
             try
             {
                 var buffer = System.Convert.FromBase64String(accessKeyBase64);
                 var accessKeyAsString = System.Text.ASCIIEncoding.ASCII.GetString(buffer);
                 this.accessKey = JsonConvert.DeserializeObject<AccessKey>(accessKeyAsString);
+                var accountId = this.accessKey.Audience.Split('.')[0];
+                this.authressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
             }
             catch (Exception)
             {
+                var accountId = accessKeyBase64.Split('.')[2];
                 this.accessKey = new AccessKey
                 {
                     Algorithm = "EdDSA",
                     ClientId = accessKeyBase64.Split('.')[0], KeyId = accessKeyBase64.Split('.')[1],
-                    Audience = $"{accessKeyBase64.Split('.')[2]}.accounts.authress.io", PrivateKey = accessKeyBase64.Split('.')[3]
+                    Audience = $"{accountId}.accounts.authress.io", PrivateKey = accessKeyBase64.Split('.')[3]
                 };
+
+                this.authressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
             }
         }
 
