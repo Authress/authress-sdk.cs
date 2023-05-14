@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace Authress.SDK.DTO
 {
-
     /// <summary>
     /// A collect of resource uri that a user has access to.
     /// </summary>

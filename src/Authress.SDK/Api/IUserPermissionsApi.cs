@@ -16,8 +16,10 @@ namespace Authress.SDK.Api
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
         /// <param name="permission">A required ALLOW action to check for. Resources a user does not have this permission will not be returned.</param>
+        /// <param name="collectionConfiguration">Configure the collection result to contain only the top level matches or additionally nested resources.</param>
         /// <returns>UserResources</returns>
-        Task<UserResources> GetUserResources (string userId, string resourceCollectionUri, string permission);
+        Task<UserResources> GetUserResources (string userId, string resourceCollectionUri, string permission,
+            CollectionConfigurationEnum collectionConfiguration = CollectionConfigurationEnum.TOP_LEVEL_ONLY);
 
         /// <summary>
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
