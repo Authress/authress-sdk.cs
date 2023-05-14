@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Authress.SDK.Client
 {
     /// <summary>
-    /// Customize the base handler used when accessing Authress through the HttpClientProvider. Everytime a new client is generated (which usually only happens once), the base handler factory will be called.
+    /// Customize the base handler used when accessing Authress through the HttpClientProvider. Every time a new client is generated (which usually only happens once), the base handler factory will be called.
     /// </summary>
     public interface IHttpClientHandlerFactory
     {
@@ -17,12 +17,12 @@ namespace Authress.SDK.Client
     }
 
     /// <summary>
-    /// Authress Domain Host: https://DOMAIN.api.authress.io
+    /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
     /// </summary>
     public class HttpClientSettings
     {
         /// <summary>
-        /// Authress Domain Host: https://DOMAIN.api.authress.io
+        /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
         /// </summary>
         public string ApiBasePath { get; set; } = "https://api.authress.io";
 

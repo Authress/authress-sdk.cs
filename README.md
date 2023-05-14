@@ -32,7 +32,8 @@ namespace Microservice
                 var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("Bearer", "access_token");
                 return accessToken;
             });
-            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
+            var authressSettings = new HttpClientSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -88,7 +89,8 @@ namespace Microservice
             // Assuming it was encrypted in storage, decrypt it
             var decodedAccessKey = decrypt(accessKey);
             var tokenProvider = new AuthressClientTokenProvider(decodedAccessKey);
-            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
+            var authressSettings = new HttpClientSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // Attempt to Authorize the user for the resource
