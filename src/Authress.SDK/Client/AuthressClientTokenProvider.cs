@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NSec.Cryptography;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
-using ScottBrady.IdentityModel.Crypto;
-using ScottBrady.IdentityModel.Tokens;
 
 namespace Authress.SDK
 {
@@ -68,9 +67,17 @@ namespace Authress.SDK
             return new SigningCredentials(new RsaSecurityKey(csp.ExportParameters(true)) { KeyId = keyId }, SecurityAlgorithms.RsaSha256);
         }
 
-        private static SigningCredentials GetSigningCredentialsEdDSA(string pem, string keyId)
+        private static string SignEdDsaToken(IDictionary<string, object> header, IDictionary<string, object> payload, string privateKey)
         {
-            return new SigningCredentials(new EdDsaSecurityKey(new Ed25519PrivateKeyParameters(Encoding.UTF8.GetBytes(pem), 0)) { KeyId = keyId }, ExtendedSecurityAlgorithms.EdDsa);
+            var headerString = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(header))).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+            var payloadString = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload))).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+            var encodedRawJwt = $"{headerString}.{payloadString}";
+            var ed25519alg = SignatureAlgorithm.Ed25519;
+            var key = Key.Import(ed25519alg, Convert.FromBase64String(privateKey), KeyBlobFormat.PkixPrivateKey);
+            var signatureBytes = ed25519alg.Sign(key, Encoding.UTF8.GetBytes(encodedRawJwt));
+            var signature = Convert.ToBase64String(signatureBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+            return $"{encodedRawJwt}.{signature}";
         }
 
         /// <summary>
@@ -83,31 +90,54 @@ namespace Authress.SDK
                 return Task.FromResult(token);
             }
 
-            var expiryDate = DateTime.UtcNow.AddDays(1);
+            var now = DateTime.UtcNow;
+            var expiryDate = now.AddDays(1);
+            tokenExpiryDate = expiryDate;
             if (accessKey == null || accessKey.PrivateKey == null)
             {
                 throw new ArgumentNullException("Invalid access key provided");
             }
 
-            var signingCredentials = accessKey.Algorithm == "RS256" ? GetSigningCredentials(accessKey.PrivateKey, accessKey.KeyId) : GetSigningCredentialsEdDSA(accessKey.PrivateKey, accessKey.KeyId);
-            var signingOptions = new SecurityTokenDescriptor
+            if (accessKey.Algorithm == "RS256")
             {
-                Issuer = GetIssuer(),
-                Audience = accessKey.Audience,
-                NotBefore = DateTime.UtcNow,
-                Expires = expiryDate,
-                SigningCredentials = signingCredentials,
-                AdditionalHeaderClaims = new Dictionary<string, object> { { "kid",  accessKey.KeyId } },
-                Subject = new System.Security.Claims.ClaimsIdentity(new [] {
-                    new Claim("sub", accessKey.ClientId),
-                    new Claim("scopes", "openid")
-                })
+                var signingOptions = new SecurityTokenDescriptor
+                {
+                    Issuer = GetIssuer(),
+                    TokenType = "at+jwt",
+                    Audience = accessKey.Audience,
+                    NotBefore = DateTime.UtcNow,
+                    Expires = expiryDate,
+                    SigningCredentials = GetSigningCredentials(accessKey.PrivateKey, accessKey.KeyId),
+                    AdditionalHeaderClaims = new Dictionary<string, object> { { "kid",  accessKey.KeyId } },
+                    Subject = new System.Security.Claims.ClaimsIdentity(new [] {
+                        new Claim("sub", accessKey.ClientId),
+                        new Claim("scopes", "openid")
+                    })
 
+                };
+                var jwtManager = new JwtSecurityTokenHandler();
+                token = jwtManager.CreateEncodedJwt(signingOptions);
+                return Task.FromResult(token);
+            }
+
+            var header = new Dictionary<string, object>
+            {
+                { "alg", "EdDSA" },
+                { "typ", "at+jwt" },
+                { "kid", accessKey.KeyId }
             };
-            var jwtManager = new JwtSecurityTokenHandler();
-            token = jwtManager.CreateEncodedJwt(signingOptions);
-            tokenExpiryDate = expiryDate;
+            var payload = new Dictionary<string, object>
+            {
+                { "iss", GetIssuer() },
+                { "sub", accessKey.ClientId },
+                { "exp", expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "iat", now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "nbf", now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "aud", accessKey.Audience },
+                { "scopes", "openid" }
+            };
 
+            token = SignEdDsaToken(header, payload, accessKey.PrivateKey);
             return Task.FromResult(token);
         }
 
@@ -130,7 +160,7 @@ namespace Authress.SDK
                 throw new ArgumentNullException("The state should match value to generate a authorization code redirect for is required.");
             }
 
-            if (string.IsNullOrEmpty(this.accessKey.ClientId))
+            if (string.IsNullOrEmpty(accessKey.ClientId))
             {
                 throw new ArgumentNullException("The clientId specifying the origin of the authentication request. This should match the service client ID");
             }
@@ -140,28 +170,30 @@ namespace Authress.SDK
                 throw new ArgumentNullException("The user to generate a authorization code redirect for is required.");
             }
 
-            var expiryDate = DateTime.UtcNow.AddSeconds(60);
-            var signingCredentials = GetSigningCredentialsEdDSA(accessKey.PrivateKey, accessKey.KeyId);
+            var now = DateTime.UtcNow;
+            var expiryDate = now.AddSeconds(60);
             var issuer = GetIssuer();
-            var signingOptions = new SecurityTokenDescriptor
-            {
-                Issuer = issuer,
-                Audience = accessKey.Audience,
-                NotBefore = DateTime.UtcNow,
-                Expires = expiryDate,
-                SigningCredentials = signingCredentials,
-                TokenType = "oauth-authz-req+jwt",
-                AdditionalHeaderClaims = new Dictionary<string, object> { { "kid",  accessKey.KeyId } },
-                Subject = new System.Security.Claims.ClaimsIdentity(new [] {
-                    new Claim("sub", userId),
-                    new Claim("scopes", "openid"),
-                    new Claim("max_age", "60", ClaimValueTypes.Integer),
-                    new Claim("client_id", this.accessKey.ClientId)
-                })
 
+            var header = new Dictionary<string, object>
+            {
+                { "alg", "EdDSA" },
+                { "typ", "oauth-authz-req+jwt" },
+                { "kid", accessKey.KeyId }
             };
-            var jwtManager = new JwtSecurityTokenHandler();
-            var code = jwtManager.CreateEncodedJwt(signingOptions);
+            var payload = new Dictionary<string, object>
+            {
+                { "iss", issuer },
+                { "sub", accessKey.ClientId },
+                { "exp", expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "iat", now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "nbf", now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "aud", accessKey.Audience },
+                { "scopes", "openid" },
+                { "max_age", 60 },
+                { "client_id", accessKey.ClientId }
+            };
+
+            var code = SignEdDsaToken(header, payload, accessKey.PrivateKey);
 
             var url = new Uri(authressCustomDomainLoginUrl);
             var qs = HttpUtility.ParseQueryString(url.Query);

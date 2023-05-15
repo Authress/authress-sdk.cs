@@ -4,7 +4,7 @@
     <AssemblyTitle>Authress SDK</AssemblyTitle>
     <Version>0.0.1</Version>
     <Authors>Authress Developers</Authors>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <AssemblyName>Authress.SDK</AssemblyName>
     <PackageId>Authress.SDK</PackageId>
     <PackageTags>Authorization;Authress;Authentication;Security</PackageTags>
@@ -21,15 +21,16 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../../images/logo.png" Pack="true" PackagePath="."/>
-    <None Include="../../README.md" pack="true" PackagePath="."/>
+    <None Include="../../images/logo.png" Pack="true" PackagePath="." />
+    <None Include="../../README.md" pack="true" PackagePath="." />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.*"/>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.*"/>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.*"/>
-    <PackageReference Include="Portable.BouncyCastle" Version="1.*"/>
-    <PackageReference Include="ScottBrady.IdentityModel" Version="1.3.*"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+    <PackageReference Include="NSec.Cryptography" Version="22.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.*" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.*" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.*" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

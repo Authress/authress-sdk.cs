@@ -2,13 +2,13 @@
   <PropertyGroup>
     <Description>UnitTests for Authress SDK</Description>
     <Authors>Authress Developers</Authors>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
     <AssemblyName>Authress.SDK.UnitTests</AssemblyName>
     <PackageId>Authress.SDK.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <AssetTargetFallback>$(AssetTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8;dotnet</AssetTargetFallback>
+    <AssetTargetFallback>$(AssetTargetFallback);dotnet6.0;dnxcore50;portable-net5+win8;dotnet</AssetTargetFallback>
     <!-- <RuntimeFrameworkVersion>3.1.0</RuntimeFrameworkVersion> -->
   </PropertyGroup>
   <ItemGroup>
@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
     <PackageReference Include="xunit.runner.visualstudio" Version="*" />
     <PackageReference Include="FluentAssertions" Version="*" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit" Version="*" />
     <PackageReference Include="moq" Version="*" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="*" />
     <PackageReference Include="XunitXml.TestLogger" Version="*" />
