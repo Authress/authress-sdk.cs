@@ -8,6 +8,7 @@ This is the changelog for [Authress SDK](readme.md).
 ## 1.3 ##
 * Upgrade to using dotnet 6.0 support.
 * Added `CollectionConfigurationEnum` for the GET User Resources endpoint.
+* Automatically inject in the authress custom domain to the token providers.
 
 
 ## 1.2 ##

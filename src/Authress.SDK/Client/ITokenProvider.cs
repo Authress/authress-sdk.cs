@@ -10,6 +10,6 @@ namespace Authress.SDK
         /// <summary>
         /// Get the bearer token
         /// </summary>
-        Task<string> GetBearerToken();
+        Task<string> GetBearerToken(string issuerOverride = null);
     }
 }
