@@ -68,7 +68,7 @@ namespace Authress.SDK.Client
                 // create the inner handlers for the cache handler, the outermost handler is called first. (https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/http-message-handlers)
                 HttpMessageHandler outermostHandler = customHttpClientHandlerFactory?.Create() ?? new HttpClientHandler { AllowAutoRedirect = true };
                 outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
-                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider);
+                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider, settings.ApiBasePath);
                 outermostHandler = new AddUserAgentHeaderHandler(outermostHandler);
 
                 // create the client and assign it to the member variable for future access, create a tmp client so that the client is fully initialized before setting "client" property.
@@ -91,14 +91,17 @@ namespace Authress.SDK.Client
     internal class AddAuthorizationHeaderHandler : DelegatingHandler
     {
         private ITokenProvider tokenProvider;
-        public AddAuthorizationHeaderHandler(HttpMessageHandler innerHandler, ITokenProvider tokenProvider) : base(innerHandler)
+        private string apiBasePath;
+
+        public AddAuthorizationHeaderHandler(HttpMessageHandler innerHandler, ITokenProvider tokenProvider, string apiBasePath) : base(innerHandler)
         {
             this.tokenProvider = tokenProvider;
+            this.apiBasePath = apiBasePath;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var bearerToken = await tokenProvider.GetBearerToken();
+            var bearerToken = await tokenProvider.GetBearerToken(apiBasePath);
             var token = bearerToken.ToLower().Contains("bearer") ? bearerToken : $"Bearer {bearerToken}";
             request.Headers.TryAddWithoutValidation("Authorization", token);
             return await base.SendAsync(request, cancellationToken);

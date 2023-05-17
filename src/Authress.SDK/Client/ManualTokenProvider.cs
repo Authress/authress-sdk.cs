@@ -20,7 +20,7 @@ namespace Authress.SDK
         /// <summary>
         /// Get the bearer token
         /// </summary>
-        public Task<string> GetBearerToken()
+        public Task<string> GetBearerToken(string authressCustomDomainFallback = null)
         {
             return Task.FromResult(token);
         }

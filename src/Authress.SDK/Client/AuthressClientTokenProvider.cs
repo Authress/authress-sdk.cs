@@ -25,19 +25,21 @@ namespace Authress.SDK
         private string token { get; set; }
         private DateTime tokenExpiryDate { get; set; }
         private readonly string authressCustomDomain;
+        private readonly string resolvedAuthressCustomDomain;
 
         /// <summary>
         /// Provides the token from locally stored access key. Access key can be retrieved when creating a new client in the Authress UI.
         /// </summary>
         public AuthressClientTokenProvider(string accessKeyBase64, string authressCustomDomain = null)
         {
+            this.authressCustomDomain = authressCustomDomain;
             try
             {
                 var buffer = System.Convert.FromBase64String(accessKeyBase64);
                 var accessKeyAsString = System.Text.ASCIIEncoding.ASCII.GetString(buffer);
                 this.accessKey = JsonConvert.DeserializeObject<AccessKey>(accessKeyAsString);
                 var accountId = this.accessKey.Audience.Split('.')[0];
-                this.authressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
+                this.resolvedAuthressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
             }
             catch (Exception)
             {
@@ -49,13 +51,14 @@ namespace Authress.SDK
                     Audience = $"{accountId}.accounts.authress.io", PrivateKey = accessKeyBase64.Split('.')[3]
                 };
 
-                this.authressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
+                this.resolvedAuthressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
             }
         }
 
-        private string GetIssuer()
+        private string GetIssuer(string authressCustomDomainFallback = null)
         {
-            return $"https://{this.authressCustomDomain}/v1/clients/{System.Web.HttpUtility.UrlEncode(this.accessKey.ClientId)}";
+            var rawDomain = (this.authressCustomDomain ?? authressCustomDomainFallback ?? resolvedAuthressCustomDomain).Replace("https://", "");
+            return $"https://{rawDomain}/v1/clients/{System.Web.HttpUtility.UrlEncode(this.accessKey.ClientId)}";
         }
 
         private static SigningCredentials GetSigningCredentials(string pem, string keyId)
@@ -83,7 +86,7 @@ namespace Authress.SDK
         /// <summary>
         /// Get the bearer token
         /// </summary>
-        public Task<string> GetBearerToken()
+        public Task<string> GetBearerToken(string authressCustomDomainFallback = null)
         {
             if (token != null && tokenExpiryDate > DateTime.UtcNow.AddHours(1))
             {
@@ -102,7 +105,7 @@ namespace Authress.SDK
             {
                 var signingOptions = new SecurityTokenDescriptor
                 {
-                    Issuer = GetIssuer(),
+                    Issuer = GetIssuer(authressCustomDomainFallback),
                     TokenType = "at+jwt",
                     Audience = accessKey.Audience,
                     NotBefore = DateTime.UtcNow,
@@ -128,7 +131,7 @@ namespace Authress.SDK
             };
             var payload = new Dictionary<string, object>
             {
-                { "iss", GetIssuer() },
+                { "iss", GetIssuer(authressCustomDomainFallback) },
                 { "sub", accessKey.ClientId },
                 { "exp", expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
                 { "iat", now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
@@ -172,7 +175,7 @@ namespace Authress.SDK
 
             var now = DateTime.UtcNow;
             var expiryDate = now.AddSeconds(60);
-            var issuer = GetIssuer();
+            var issuer = GetIssuer(authressCustomDomainLoginUrl);
 
             var header = new Dictionary<string, object>
             {

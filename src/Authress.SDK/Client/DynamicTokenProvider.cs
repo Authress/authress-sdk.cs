@@ -23,7 +23,7 @@ namespace Authress.SDK
         /// <summary>
         /// Get the bearer token
         /// </summary>
-        public async Task<string> GetBearerToken()
+        public async Task<string> GetBearerToken(string authressCustomDomainFallback = null)
         {
             var token = await resolver();
             return token;
