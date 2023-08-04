@@ -5,6 +5,10 @@ This is the changelog for [Authress SDK](readme.md).
 * Renamed `AccessRecordStatements` and other models that end with `S` but aren't actually plural to be `AccessRecordStatement` (without the `S`).
 * All APIs are now part of sub instance properties of the `AuthressClient` class, `AccessClient.AccessRecords` and `AccessClient.ServiceClients`, etc..
 
+## 1.4 ##
+* Support exponential back-off retries on unexpected failures.
+* Add optimized caching for authorization checks
+
 ## 1.3 ##
 * Upgrade to using dotnet 6.0 support.
 * Added `CollectionConfigurationEnum` for the GET User Resources endpoint.

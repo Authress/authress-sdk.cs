@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,7 @@ using Authress.SDK;
 using Authress.SDK.Api;
 using Authress.SDK.Client;
 using Authress.SDK.DTO;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Authress.SDK
 {
@@ -16,6 +18,19 @@ namespace Authress.SDK
     /// </summary>
     public partial class AuthressClient : IUserPermissionsApi
     {
+        private static readonly IMemoryCache authorizationCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 2000 });
+
+        private static void SetCacheKey ((string, string, string) key, bool value) {
+            authorizationCache.Set(key, value, new MemoryCacheEntryOptions {
+                SlidingExpiration = TimeSpan.FromMinutes(5),
+                Size = 1
+            });
+        }
+
+        private static bool GetCachedValue((string, string, string) key, bool value) {
+            return authorizationCache.Get<bool>(key);
+        }
+
         /// <summary>
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
         /// </summary>
@@ -56,15 +71,70 @@ namespace Authress.SDK
 
             var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources/{System.Web.HttpUtility.UrlEncode(resourceUri)}/permissions/{System.Web.HttpUtility.UrlEncode(permission)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
-            using (var response = await client.GetAsync(path))
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound)
+            HttpStatusCode responseStatusCode;
+            string formattedMsg = null;
+            try {
+                using (var response = await client.GetAsync(path))
                 {
+                    responseStatusCode = response.StatusCode;
+
+                    // 200s are handled here
+                    // 300s have automated redirect handling so they are also dynamically handled
+                    if ((int)responseStatusCode >= 200 && (int)responseStatusCode <= 299) {
+                        SetCacheKey((userId, resourceUri, permission), true);
+                        return;
+                    }
+
+                    // 404 missing permission
+                    if (responseStatusCode == HttpStatusCode.NotFound)
+                    {
+                        SetCacheKey((userId, resourceUri, permission), false);
+                        throw new NotAuthorizedException(userId, resourceUri, permission);
+                    }
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    formattedMsg = $"Status code was {responseStatusCode} when calling '{response.RequestMessage?.RequestUri?.ToString()}', message was '{content}'";
+                }
+            }
+            catch
+            {
+                if (authorizationCache.TryGetValue((userId, resourceUri, permission), out bool cachedValueOnConnectionError))
+                {
+                    if (cachedValueOnConnectionError)
+                    {
+                        return;
+                    }
+
                     throw new NotAuthorizedException(userId, resourceUri, permission);
                 }
 
-                await response.ThrowIfNotSuccessStatusCode();
+                // Throw on connection issues where there wasn't anything in the cache
+                // * At this point we already retried as much as possible there is nothing else we can do other than throw
+                throw;
             }
+
+            // All other 400s are handled here
+            if (responseStatusCode == HttpStatusCode.Unauthorized) { throw new InvalidTokenException(); }
+            if (responseStatusCode == HttpStatusCode.PaymentRequired) { throw new PaymentRequiredException(); }
+            if ((int)responseStatusCode == 429) { throw new TooManyRequestsException(); }
+
+            if ((int)responseStatusCode >= 400 && (int)responseStatusCode <= 499)
+            {
+                throw new NotSuccessHttpResponseException(responseStatusCode, formattedMsg);
+            }
+
+            // Handle 500s
+            if (authorizationCache.TryGetValue((userId, resourceUri, permission), out bool cachedValue))
+            {
+                if (cachedValue)
+                {
+                    return;
+                }
+
+                throw new NotAuthorizedException(userId, resourceUri, permission);
+            }
+
+            throw new NotSuccessHttpResponseException(responseStatusCode, formattedMsg);
         }
 
         /// <summary>

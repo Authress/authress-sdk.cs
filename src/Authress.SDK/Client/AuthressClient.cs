@@ -21,9 +21,25 @@ namespace Authress.SDK
         /// <summary>
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
         /// </summary>
+        public AuthressClient(ITokenProvider tokenProvider, AuthressSettings settings, IHttpClientHandlerFactory customHttpClientHandlerFactory = null)
+        {
+            if (settings == null) {
+                throw new ArgumentNullException("Missing required parameter AuthressSettings");
+            }
+            authressHttpClientProvider = new HttpClientProvider(settings, tokenProvider, customHttpClientHandlerFactory);
+        }
+
+        /// <summary>
+        /// Deprecated Constructor
+        /// </summary>
         public AuthressClient(ITokenProvider tokenProvider, HttpClientSettings settings, IHttpClientHandlerFactory customHttpClientHandlerFactory = null)
         {
-            authressHttpClientProvider = new HttpClientProvider(settings, tokenProvider, customHttpClientHandlerFactory);
+            if (settings == null) {
+                throw new ArgumentNullException("Missing required parameter HttpClientSettings");
+            }
+            authressHttpClientProvider = new HttpClientProvider(
+                new AuthressSettings { ApiBasePath = settings?.ApiBasePath, RequestTimeout = settings?.RequestTimeout },
+                tokenProvider, customHttpClientHandlerFactory);
         }
     }
 

@@ -24,4 +24,8 @@
     <PackageReference Include="System.Diagnostics.TraceSource" Version="*" />
     <PackageReference Include="XunitXml.TestLogger" Version="*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
 </Project>

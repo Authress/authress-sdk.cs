@@ -33,7 +33,7 @@ namespace Microservice
                 return accessToken;
             });
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new HttpClientSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
+            var authressSettings = new AuthressSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -59,7 +59,7 @@ namespace Microservice
             // automatically populate forward the users token
             // 1. instantiate all the necessary classes
             var tokenProvider = new ManualTokenProvider();
-            var authressSettings = new HttpClientSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            var authressSettings = new AuthressSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -90,7 +90,7 @@ namespace Microservice
             var decodedAccessKey = decrypt(accessKey);
             var tokenProvider = new AuthressClientTokenProvider(decodedAccessKey);
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new HttpClientSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
+            var authressSettings = new AuthressSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // Attempt to Authorize the user for the resource
