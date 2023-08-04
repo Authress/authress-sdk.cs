@@ -48,9 +48,9 @@ namespace Authress.SDK.Client
         public TimeSpan? RequestTimeout { get; set; } = null;
 
         /// <summary>
-        /// Max retries for requests that fail.
+        /// In the even that the request fails with a retryable error, such as a 503 status code, how many additional attempts to should the SDK make to complete request.
         /// </summary>
-        public uint MaxRetries { get; set; } = 5;
+        public uint AdditionalRetries { get; set; } = 5;
     }
 
     internal class HttpClientProvider
@@ -99,7 +99,7 @@ namespace Authress.SDK.Client
 
                 /********************/
                 // The retry handler
-                outermostHandler = new RetryHandler(outermostHandler, settings.MaxRetries);
+                outermostHandler = new RetryHandler(outermostHandler, settings.AdditionalRetries);
                 /********************/
 
                 // List of Handlers that never need to be retried
@@ -187,18 +187,18 @@ namespace Authress.SDK.Client
 
     internal class RetryHandler : DelegatingHandler
     {
-        private readonly uint maxRetries = 5;
+        private readonly uint additionalRetries = 5;
         private const int retryDelayMilliseconds = 20;
 
-        public RetryHandler(HttpMessageHandler innerHandler, uint maxRetries = 5) : base(innerHandler) {
-            this.maxRetries = maxRetries;
+        public RetryHandler(HttpMessageHandler innerHandler, uint additionalRetries = 5) : base(innerHandler) {
+            this.additionalRetries = additionalRetries;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
             Exception lastException = null;
-            for (int i = 0; i <= maxRetries; i++)
+            for (int i = 0; i <= additionalRetries; i++)
             {
                 try
                 {
@@ -214,7 +214,7 @@ namespace Authress.SDK.Client
                     lastException = requestException;
                 }
 
-                if (i == maxRetries)
+                if (i == additionalRetries)
                 {
                     break;
                 }

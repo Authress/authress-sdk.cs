@@ -48,7 +48,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
 
@@ -70,7 +70,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
 
@@ -92,7 +92,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
 
@@ -114,7 +114,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             try {
                 await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
             } catch (Exception actualException) {
@@ -144,7 +144,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             try {
                 await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, $"{new Random().Next()}");
             } catch (Exception actualException) {
@@ -164,7 +164,7 @@ namespace Authress.SDK.UnitTests
             var mockHttpClient = new Mock<HttpClientHandler>();
             var mockFactory = new Mock<IHttpClientHandlerFactory>();
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ MaxRetries = 0 }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
 
             var callSequence = mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
             for (var iteration = 0; iteration < iterationsLength; iteration++) {
