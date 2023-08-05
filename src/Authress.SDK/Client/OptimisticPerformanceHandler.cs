@@ -17,12 +17,13 @@ namespace Authress.SDK.Client
 
     internal class OptimisticPerformanceHandler : DelegatingHandler
     {
-        private readonly TimeSpan maxTimeoutWaitingForResponses = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan cacheFallbackTimeout = TimeSpan.FromMilliseconds(30);
+
         private readonly TimeSpan cacheDuration = TimeSpan.FromHours(1);
         private readonly IMemoryCache responseCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 2000 });
 
-        public OptimisticPerformanceHandler(HttpMessageHandler innerHandler, TimeSpan maxTimeoutWaitingForResponses) : base(innerHandler) {
-            this.maxTimeoutWaitingForResponses = maxTimeoutWaitingForResponses;
+        public OptimisticPerformanceHandler(HttpMessageHandler innerHandler, TimeSpan cacheFallbackTimeout) : base(innerHandler) {
+            this.cacheFallbackTimeout = cacheFallbackTimeout;
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Authress.SDK.Client
             }
 
             var httpSendTask = base.SendAsync(request, cancellationToken);
-            var timeoutTask = Task.Delay(maxTimeoutWaitingForResponses, cancellationToken);
+            var timeoutTask = Task.Delay(cacheFallbackTimeout, cancellationToken);
 
             var firstCompletedTask = await Task.WhenAny(httpSendTask, timeoutTask);
 
