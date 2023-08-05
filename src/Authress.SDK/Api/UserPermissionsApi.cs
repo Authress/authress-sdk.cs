@@ -18,17 +18,14 @@ namespace Authress.SDK
     /// </summary>
     public partial class AuthressClient : IUserPermissionsApi
     {
-        private static readonly IMemoryCache authorizationCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 2000 });
+        // There is a two level cache in place because the OptimisticPerformanceHandler might have evicted the value from the cache already, and here we can keep ones either for long and also more specific to this endpoint. The difference is we only cache for 5 minutes
+        private static readonly IMemoryCache authorizationCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 5000 });
 
         private static void SetCacheKey ((string, string, string) key, bool value) {
             authorizationCache.Set(key, value, new MemoryCacheEntryOptions {
                 SlidingExpiration = TimeSpan.FromMinutes(5),
                 Size = 1
             });
-        }
-
-        private static bool GetCachedValue((string, string, string) key, bool value) {
-            return authorizationCache.Get<bool>(key);
         }
 
         /// <summary>

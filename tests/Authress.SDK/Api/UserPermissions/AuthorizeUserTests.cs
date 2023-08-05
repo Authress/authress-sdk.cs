@@ -38,7 +38,7 @@ namespace Authress.SDK.UnitTests
         [Theory, MemberData(nameof(TestCases))]
         public async Task AuthorizeUserCaching(string testName, TestCase testCase)
         {
-            var mockHttpClient = new Mock<HttpClientHandler>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
             mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
@@ -46,7 +46,7 @@ namespace Authress.SDK.UnitTests
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK })
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
 
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
@@ -59,7 +59,7 @@ namespace Authress.SDK.UnitTests
         [Theory, MemberData(nameof(TestCases))]
         public async Task AuthorizeUserFallbackToCacheOn5XX(string testName, TestCase testCase)
         {
-            var mockHttpClient = new Mock<HttpClientHandler>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
 
             mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -68,7 +68,7 @@ namespace Authress.SDK.UnitTests
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK })
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
 
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
@@ -81,7 +81,7 @@ namespace Authress.SDK.UnitTests
         [Theory, MemberData(nameof(TestCases))]
         public async Task AuthorizeUserFallbackToCacheOnConnectionError(string testName, TestCase testCase)
         {
-            var mockHttpClient = new Mock<HttpClientHandler>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
 
             mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -90,7 +90,7 @@ namespace Authress.SDK.UnitTests
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK })
             .ThrowsAsync(new AuthorizeUserTestsIntentionalException());
 
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             await client.AuthorizeUser(testCase.UserId, testCase.ResourceId, testCase.Permission);
@@ -103,7 +103,7 @@ namespace Authress.SDK.UnitTests
         [Theory, MemberData(nameof(TestCases))]
         public async Task AuthorizeUserFallbackToCachedUnauthorizedOnConnectionError(string testName, TestCase testCase)
         {
-            var mockHttpClient = new Mock<HttpClientHandler>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
 
             mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -112,7 +112,7 @@ namespace Authress.SDK.UnitTests
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.NotFound })
             .ThrowsAsync(new AuthorizeUserTestsIntentionalException());
 
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             try {
@@ -133,7 +133,7 @@ namespace Authress.SDK.UnitTests
         [Theory, MemberData(nameof(TestCases))]
         public async Task ThrowsErrorOnNoCachedResultAndMissingPermission(string testName, TestCase testCase)
         {
-            var mockHttpClient = new Mock<HttpClientHandler>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
 
             mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -142,7 +142,7 @@ namespace Authress.SDK.UnitTests
             .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.NotFound })
             .ThrowsAsync(new AuthorizeUserTestsIntentionalException());
 
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
             try {
@@ -161,8 +161,8 @@ namespace Authress.SDK.UnitTests
             var iterationsLength = 10000;
             var expectedCacheSize = 2000;
 
-            var mockHttpClient = new Mock<HttpClientHandler>();
-            var mockFactory = new Mock<IHttpClientHandlerFactory>();
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
             var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0 }, mockFactory.Object);
 

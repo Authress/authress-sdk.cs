@@ -51,6 +51,11 @@ namespace Authress.SDK.Client
         /// In the even that the request fails with a retryable error, such as a 503 status code, how many additional attempts to should the SDK make to complete request.
         /// </summary>
         public uint AdditionalRetries { get; set; } = 5;
+
+        /// <summary>
+        /// Set the max wait time for requests sent to Authress. If Authress does not respond in this time, immediately go to cache to resolve the result. If the cache is not populated this value of this setting is not taken into account and the request will wait for the full duration.
+        /// </summary>
+        public TimeSpan MaxTimeoutWaitingForResponses { get; set; } = TimeSpan.FromSeconds(1);
     }
 
     internal class HttpClientProvider
@@ -103,6 +108,7 @@ namespace Authress.SDK.Client
                 /********************/
 
                 // List of Handlers that never need to be retried
+                outermostHandler = new OptimisticPerformanceHandler(outermostHandler, settings.MaxTimeoutWaitingForResponses);
                 outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
                 outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider, settings.ApiBasePath);
                 outermostHandler = new AddUserAgentHeaderHandler(outermostHandler);
@@ -198,7 +204,8 @@ namespace Authress.SDK.Client
         {
             HttpResponseMessage response = null;
             Exception lastException = null;
-            for (int i = 0; i <= additionalRetries; i++)
+            var totalRequests = 1 + additionalRetries;
+            for (int i = 0; i < totalRequests; i++)
             {
                 try
                 {

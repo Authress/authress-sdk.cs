@@ -39,7 +39,7 @@ namespace Authress.SDK.Client
         public static async Task<string> FormatErrorMessage(this HttpResponseMessage message)
         {
             var msg = await message.Content.ReadAsStringAsync();
-            var formattedMsg = $"Error processing request. Status code was {message.StatusCode} when calling '{message.RequestMessage.RequestUri}', message was '{msg}'";
+            var formattedMsg = $"Error processing request. Status code was {message.StatusCode} when calling '{message.RequestMessage?.RequestUri?.ToString()}', message was '{msg}'";
             return formattedMsg;
         }
     }
