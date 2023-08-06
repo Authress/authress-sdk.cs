@@ -60,16 +60,6 @@ namespace Authress.SDK.Client
 
             var cachedResponse = GetCachedResponse(request, key);
 
-            /* Wait times based on cache age
-                { cache age seconds, timeout milliseconds}
-                { 0, 0}
-                { 1, 10}
-                { 10, 30}
-                { 30, 100}
-                { 60, 200}
-                { 5 * 60, 1000}
-                { 10 * 60, 2000}
-            */
             TimeSpan modifiedTimeoutCalculator()
             {
                 var maxWaitTime = 10000;
@@ -78,6 +68,17 @@ namespace Authress.SDK.Client
                 }
 
                 var difference = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - cachedResponse.CachedAtTimestamp;
+                // Otherwise use a scaled value for how long is reasonable to wait. The longer the data is stale the longer we should wait before accepting it
+                /* Wait times based on cache age
+                { cache age seconds, timeout milliseconds}
+                    { 0, 0}
+                    { 1, 10}
+                    { 10, 30}
+                    { 30, 100}
+                    { 60, 200}
+                    { 5 * 60, 1000}
+                    { 10 * 60, 2000}
+                */
                 var expectedTimeoutMultiplier = difference <= 0 ? 0 : (int)Math.Floor(2 * difference * Math.Log(difference, 10));
                 var actualTimeoutMultiplier = expectedTimeoutMultiplier >= maxWaitTime ? maxWaitTime : (expectedTimeoutMultiplier <= 0 ? 0 : expectedTimeoutMultiplier);
                 return actualTimeoutMultiplier / 100 * cacheFallbackNormTimeout;
