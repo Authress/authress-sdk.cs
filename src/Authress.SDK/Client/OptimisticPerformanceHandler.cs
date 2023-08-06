@@ -17,13 +17,13 @@ namespace Authress.SDK.Client
 
     internal class OptimisticPerformanceHandler : DelegatingHandler
     {
-        private readonly TimeSpan cacheFallbackTimeout = TimeSpan.FromMilliseconds(30);
+        private readonly TimeSpan cacheFallbackNormTimeout;
 
         private readonly TimeSpan cacheDuration = TimeSpan.FromHours(1);
         private readonly IMemoryCache responseCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 2000 });
 
         public OptimisticPerformanceHandler(HttpMessageHandler innerHandler, TimeSpan cacheFallbackTimeout) : base(innerHandler) {
-            this.cacheFallbackTimeout = cacheFallbackTimeout;
+            this.cacheFallbackNormTimeout = cacheFallbackTimeout;
         }
 
         /// <summary>
@@ -58,8 +58,33 @@ namespace Authress.SDK.Client
                 key = $"{jwtSubject}-${key}";
             }
 
+            var cachedResponse = GetCachedResponse(request, key);
+
+            /* Wait times based on cache age
+                { cache age seconds, timeout milliseconds}
+                { 0, 0}
+                { 1, 10}
+                { 10, 30}
+                { 30, 100}
+                { 60, 200}
+                { 5 * 60, 1000}
+                { 10 * 60, 2000}
+            */
+            TimeSpan modifiedTimeoutCalculator()
+            {
+                var maxWaitTime = 10000;
+                if (cachedResponse == null) {
+                    return TimeSpan.FromMilliseconds(maxWaitTime);
+                }
+
+                var difference = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - cachedResponse.CachedAtTimestamp;
+                var expectedTimeoutMultiplier = difference <= 0 ? 0 : (int)Math.Floor(2 * difference * Math.Log(difference, 10));
+                var actualTimeoutMultiplier = expectedTimeoutMultiplier >= maxWaitTime ? maxWaitTime : (expectedTimeoutMultiplier <= 0 ? 0 : expectedTimeoutMultiplier);
+                return actualTimeoutMultiplier / 100 * cacheFallbackNormTimeout;
+            }
+
             var httpSendTask = base.SendAsync(request, cancellationToken);
-            var timeoutTask = Task.Delay(cacheFallbackTimeout, cancellationToken);
+            var timeoutTask = Task.Delay(modifiedTimeoutCalculator(), cancellationToken);
 
             var firstCompletedTask = await Task.WhenAny(httpSendTask, timeoutTask);
 
@@ -67,8 +92,7 @@ namespace Authress.SDK.Client
             // * The cache does not respond, has no data, or times out then fallback to the http request
             if (firstCompletedTask == timeoutTask)
             {
-                var data = GetCachedResponse(request, key);
-                if (data != null)
+                if (cachedResponse != null)
                 {
                     // update the cache after the http task eventually completes, without awaiting it
                     // Do not await saving the value to the cache because we timed out
@@ -77,7 +101,7 @@ namespace Authress.SDK.Client
                         if (200 <= (int)t.Result.StatusCode && (int)t.Result.StatusCode < 500) { await SaveResponseToCache(t.Result, key); }
                     }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                    return data;
+                    return cachedResponse.HttpResponseMessage;
                 }
             }
 
@@ -95,7 +119,7 @@ namespace Authress.SDK.Client
                     // * If we failed to store the value to the cache then we are stuck, so fallback to the previous version in the cache if available.
                     var entry = await SaveResponseToCache(response, key);
                     if (entry != null) {
-                        return request.ConvertCachedEntryToHttpResponse(entry);
+                        return request.ConvertCachedEntryToHttpResponse(entry).HttpResponseMessage;
                     }
                 }
             }
@@ -105,10 +129,9 @@ namespace Authress.SDK.Client
             }
 
             // when unsuccessful, try to get it from the cache, which means the last successful invocation
-            var cachedResponse = GetCachedResponse(request, key);
             if (cachedResponse != null)
             {
-                return cachedResponse;
+                return cachedResponse.HttpResponseMessage;
             }
 
             if (requestException != null) {
@@ -118,7 +141,7 @@ namespace Authress.SDK.Client
             return response;
         }
 
-        private HttpResponseMessage GetCachedResponse(HttpRequestMessage request, string key)
+        private HttpResponseMessageWithCacheData GetCachedResponse(HttpRequestMessage request, string key)
         {
             // get from cache
             if (responseCache.TryGetValue(key, out byte[] binaryData))
@@ -166,6 +189,15 @@ namespace Authress.SDK.Client
     }
 }
 
+internal class HttpResponseMessageWithCacheData {
+    public HttpResponseMessage HttpResponseMessage { get; }
+    public long CachedAtTimestamp { get; }
+
+    public HttpResponseMessageWithCacheData(long cachedAtDateTime, HttpResponseMessage httpResponseMessage) {
+        HttpResponseMessage = httpResponseMessage;
+        CachedAtTimestamp = cachedAtDateTime;
+    }
+}
 /// <summary>
 /// The data object that is used to put into the cache.
 /// </summary>
@@ -184,7 +216,10 @@ internal class HttpCacheableData
         CacheableResponse = cacheableResponse;
         Headers = headers;
         ContentHeaders = contentHeaders;
+        CachedAtDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
+
+    public long CachedAtDateTime { get; }
 
     /// <summary>
     /// The cacheable part of a previously retrieved response (excludes the content and request).
@@ -233,7 +268,7 @@ internal static class HttpResponseMessageExtensions
     /// <param name="request">The request that invoked retrieving this response and need to be attached to the response.</param>
     /// <param name="cachedData">The deserialized data from the cache.</param>
     /// <returns>A valid HttpResponseMessage that can be consumed by the caller of this message handler.</returns>
-    public static HttpResponseMessage ConvertCachedEntryToHttpResponse(this HttpRequestMessage request, HttpCacheableData cachedData)
+    public static HttpResponseMessageWithCacheData ConvertCachedEntryToHttpResponse(this HttpRequestMessage request, HttpCacheableData cachedData)
     {
         var response = cachedData.CacheableResponse;
         if (cachedData.Headers != null)
@@ -253,6 +288,6 @@ internal static class HttpResponseMessageExtensions
             }
         }
         response.RequestMessage = request;
-        return response;
+        return new HttpResponseMessageWithCacheData(cachedData.CachedAtDateTime, response);
     }
 }

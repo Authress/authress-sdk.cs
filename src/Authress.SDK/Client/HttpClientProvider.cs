@@ -53,9 +53,9 @@ namespace Authress.SDK.Client
         public uint AdditionalRetries { get; set; } = 5;
 
         /// <summary>
-        /// Set the max wait time for requests sent to Authress. If Authress does not respond in this time, immediately go to cache to resolve the result. If the cache is not populated this value of this setting is not taken into account and the request will wait for the full duration. The default is 30 milliseconds.
+        /// Set the expected norm wait time for requests sent to Authress. If Authress does not respond in this time, immediately go to cache to resolve the result. If the cache is not populated this value of this setting is not taken into account and the request will wait for the full duration of the request. The default norm is 100 milliseconds.
         /// </summary>
-        public TimeSpan CacheFallbackTimeout { get; set; } = TimeSpan.FromMilliseconds(30);
+        public TimeSpan CacheFallbackNormTimeout { get; set; } = TimeSpan.FromMilliseconds(100);
     }
 
     internal class HttpClientProvider
@@ -108,7 +108,7 @@ namespace Authress.SDK.Client
                 /********************/
 
                 // List of Handlers that never need to be retried
-                outermostHandler = new OptimisticPerformanceHandler(outermostHandler, settings.CacheFallbackTimeout);
+                outermostHandler = new OptimisticPerformanceHandler(outermostHandler, settings.CacheFallbackNormTimeout);
                 outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
                 outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider, settings.ApiBasePath);
                 outermostHandler = new AddUserAgentHeaderHandler(outermostHandler);

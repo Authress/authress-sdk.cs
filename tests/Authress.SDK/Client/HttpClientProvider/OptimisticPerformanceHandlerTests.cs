@@ -233,7 +233,7 @@ namespace Authress.SDK.UnitTests
 
             var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
             mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
-            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0, CacheFallbackTimeout = TimeSpan.FromMilliseconds(1) }, mockFactory.Object);
+            var client = new AuthressClient(null, new AuthressSettings{ AdditionalRetries = 0, CacheFallbackNormTimeout = TimeSpan.FromMilliseconds(1) }, mockFactory.Object);
 
             var responseWhenSuccess = await client.GetUserResources(userId, resourceId, permission, CollectionConfigurationEnum.INCLUDE_NESTED);
             var responseWhenSuccess2 = await client.GetUserResources(userId, resourceId, permission, CollectionConfigurationEnum.INCLUDE_NESTED);
