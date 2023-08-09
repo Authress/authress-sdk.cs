@@ -20,7 +20,13 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="*" />
     <PackageReference Include="FluentAssertions" Version="*" />
     <PackageReference Include="xunit" Version="*" />
-    <PackageReference Include="moq" Version="*" />
+
+    <!-- Do not upgrade as long as https://github.com/moq/moq/blob/main/src/Moq.CodeAnalysis/SponsorLinker.cs#L17C20-L17C39 exists
+        https://www.reddit.com/r/dotnet/comments/15ljdcc/does_moq_in_its_latest_version_extract_and_send/
+    -->
+    <PackageReference Include="moq" Version="4.18.4" />
+    <!-- ******************************************** -->
+
     <PackageReference Include="System.Diagnostics.TraceSource" Version="*" />
     <PackageReference Include="XunitXml.TestLogger" Version="*" />
   </ItemGroup>
