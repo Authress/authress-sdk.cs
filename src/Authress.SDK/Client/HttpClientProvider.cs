@@ -160,7 +160,7 @@ namespace Authress.SDK.Client
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var version = typeof(HttpClientProvider).Assembly.GetName().Version;
-            request.Headers.TryAddWithoutValidation("User-Agent", $"C# AuthressSDK version: {version}");
+            request.Headers.TryAddWithoutValidation("User-Agent", $"Authress SDK; C#; {version};");
             return await base.SendAsync(request, cancellationToken);
         }
     }
