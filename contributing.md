@@ -30,6 +30,9 @@ unzip SHA
 podman stop $CID && podman rm $CID
 ```
 
+### Nuget Push Failed
+Update the API Key: https://www.nuget.org/account/apikeys using the Rhosys Developer MS Account.
+
 ### Common review items
 * [ ] Inputs to Constructor are (string: authress_api_url, string: service_client_access_key)
 * [x] authress_api_url should sanitize https:// prefix and remove trailing `/`s
