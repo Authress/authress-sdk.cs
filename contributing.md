@@ -50,8 +50,8 @@ Update the API Key: https://www.nuget.org/account/apikeys using the Rhosys Devel
 * [ ] Add UnauthorizedError type to the authorizeUser function
 * [ ] GET query parameters should be an object
 * [ ] Top level tags from the API should accessible from the base class: `authressClient.accessRecords.getRecords(...)`
-* [ ] Automatic Retry
-  * [ ] Automatic fallback to cache
+* [x] Automatic Retry
+  * [x] Automatic fallback to cache
 * [ ] In memory caching for authorization checks - memoize
 * [ ] Unsigned int for all limits
 * [ ] readonly properties are never specified as required for request bodies
