@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -99,19 +100,27 @@ namespace Authress.SDK
         /// Update a group Updates a group adding or removing user. Change a group updates the permissions and roles the users have access to. (Groups have a maximum size of ~100KB)
         /// </summary>
         /// <param name="groupId">The identifier of the group.</param>
-        /// <param name="body"></param>
+        /// <param name="group">The Group data</param>
+        /// <param name="expectedLastModifiedTime">The expected last time the group was updated</param>
         /// <returns>Group</returns>
-        public async Task<Group> UpdateGroup (string groupId, Group body)
+        public async Task<Group> UpdateGroup (string groupId, Group group, DateTimeOffset? expectedLastModifiedTime = null)
         {
-            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+            if (group == null) throw new ArgumentNullException("Missing required parameter 'group'.");
             if (groupId == null) throw new ArgumentNullException("Missing required parameter 'groupId'.");
 
             var path = $"/v1/groups/{System.Web.HttpUtility.UrlEncode(groupId)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
-            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            using (var request = new HttpRequestMessage(HttpMethod.Post, path))
             {
-                await response.ThrowIfNotSuccessStatusCode();
-                return await response.Content.ReadAsAsync<Group>();
+                request.Content = group.ToHttpContent();
+                if (expectedLastModifiedTime.HasValue) {
+                    request.Headers.Add("If-Unmodified-Since", expectedLastModifiedTime.Value.ToString("o", CultureInfo.InvariantCulture));
+                }
+                using (var response = await client.SendAsync(request))
+                {
+                    await response.ThrowIfNotSuccessStatusCode();
+                    return await response.Content.ReadAsAsync<Group>();
+                }
             }
         }
 

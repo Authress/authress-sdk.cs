@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Authress.SDK.DTO;
 
@@ -38,8 +39,9 @@ namespace Authress.SDK
         /// Update a group Updates a group adding or removing user. Change a group updates the permissions and roles the users have access to. (Groups have a maximum size of ~100KB)
         /// </summary>
         /// <param name="groupId">The identifier of the group.</param>
-        /// <param name="body"></param>
+        /// <param name="group"></param>
+        /// <param name="expectedLastModifiedTime">The expected last time the group was updated</param>
         /// <returns>Group</returns>
-        Task<Group> UpdateGroup (string groupId, Group body);
+        Task<Group> UpdateGroup (string groupId, Group group, DateTimeOffset? expectedLastModifiedTime = null);
     }
 }

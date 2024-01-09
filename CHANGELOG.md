@@ -8,6 +8,7 @@ This is the changelog for [Authress SDK](readme.md).
 ## 1.4 ##
 * Support exponential back-off retries on unexpected failures.
 * Add optimized caching for authorization checks
+* Add support for If-Unmodified-Since in group and access record apis.
 
 ## 1.3 ##
 * Upgrade to using dotnet 6.0 support.

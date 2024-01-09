@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -119,38 +120,47 @@ namespace Authress.SDK
         /// <summary>
         /// Update an access record. Updates an access record adding or removing user permissions to resources.
         /// </summary>
-        /// <param name="body"></param>
-        /// <param name="recordId">The identifier of the access record.</param>
+        /// /// <param name="recordId">The identifier of the access record.</param>
+        /// <param name="accessRecord"></param>
+        /// <param name="expectedLastModifiedTime">The expected last time the record was updated.</param>
         /// <returns>AccessRecord</returns>
-        public async Task<AccessRecord> UpdateRecord (string recordId, AccessRecord body)
+        public async Task<AccessRecord> UpdateRecord (string recordId, AccessRecord accessRecord, DateTimeOffset? expectedLastModifiedTime = null)
         {
-            // verify the required parameter 'body' is set
-            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+            // verify the required parameter 'record' is set
+            if (accessRecord == null) throw new ArgumentNullException("Missing required parameter 'accessRecord'.");
             // verify the required parameter 'recordId' is set
             if (recordId == null) throw new ArgumentNullException("Missing required parameter 'recordId'.");
 
             var path = $"/v1/records/{System.Web.HttpUtility.UrlEncode(recordId)}";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
-            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, path))
             {
-                await response.ThrowIfNotSuccessStatusCode();
-                return await response.Content.ReadAsAsync<AccessRecord>();
+                request.Content = accessRecord.ToHttpContent();
+                if (expectedLastModifiedTime.HasValue) {
+                    request.Headers.Add("If-Unmodified-Since", expectedLastModifiedTime.Value.ToString("o", CultureInfo.InvariantCulture));
+                }
+                using (var response = await client.PostAsync(path, accessRecord.ToHttpContent()))
+                {
+                    await response.ThrowIfNotSuccessStatusCode();
+                    return await response.Content.ReadAsAsync<AccessRecord>();
+                }
             }
         }
 
         /// <summary>
         /// Create access request Specify a request in the form of an access record that an admin can approve.
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="accessRecord"></param>
         /// <returns>AccessRequest</returns>
-        public async Task<AccessRequest> CreateRequest(AccessRequest body)
+        public async Task<AccessRequest> CreateRequest(AccessRequest accessRecord)
         {
             // verify the required parameter 'body' is set
-            if (body == null) throw new ArgumentNullException("Missing required parameter 'body'.");
+            if (accessRecord == null) throw new ArgumentNullException("Missing required parameter 'body'.");
 
             var path = "/v1/requests";
             var client = await authressHttpClientProvider.GetHttpClientAsync();
-            using (var response = await client.PostAsync(path, body.ToHttpContent()))
+            using (var response = await client.PostAsync(path, accessRecord.ToHttpContent()))
             {
                 await response.ThrowIfNotSuccessStatusCode();
                 return await response.Content.ReadAsAsync<AccessRequest>();

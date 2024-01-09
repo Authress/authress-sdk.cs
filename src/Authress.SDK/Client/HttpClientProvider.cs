@@ -176,9 +176,10 @@ namespace Authress.SDK.Client
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var mergedPath = request.RequestUri.AbsolutePath.StartsWith(baseUrl.AbsolutePath) ? request.RequestUri.AbsolutePath : baseUrl.AbsolutePath + request.RequestUri.AbsolutePath.Substring(1);
             var builder = new UriBuilder(baseUrl.Scheme, baseUrl.Host, baseUrl.Port)
             {
-                Path = MergePath(baseUrl.AbsolutePath, request.RequestUri.AbsolutePath),
+                Path = mergedPath,
                 Query = request.RequestUri.Query,
                 Fragment = request.RequestUri.Fragment
             };
@@ -186,9 +187,6 @@ namespace Authress.SDK.Client
             request.RequestUri = builder.Uri;
             return await base.SendAsync(request, cancellationToken);
         }
-
-        private static string MergePath(string baseUrlPath, string requestPath) =>
-            requestPath.StartsWith(baseUrlPath) ? requestPath : baseUrlPath + requestPath.Substring(1);
     }
 
     internal class RetryHandler : DelegatingHandler
