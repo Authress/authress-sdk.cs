@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Authress.SDK.DTO;
 
@@ -11,9 +12,9 @@ namespace Authress.SDK.Api
         /// <summary>
         /// Claim a resource by an allowed user Claim a resource by allowing a user to pick an identifier and receive admin access to that resource if it hasn't already been claimed. This only works for resources specifically marked as "CLAIM". The result will be a new access record listing that user as the admin for this resource.
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="claimRequest"></param>
         /// <returns>ClaimResponse</returns>
-        Task<ClaimResponse> CreateClaim (ClaimRequest body);
+        Task<ClaimResponse> CreateClaim (ClaimRequest claimRequest);
 
         #region Access Requests
         /// <summary>
@@ -27,9 +28,9 @@ namespace Authress.SDK.Api
         /// <summary>
         /// Create a new access record Specify user roles for specific resources.
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="accessRecord"></param>
         /// <returns>AccessRecord</returns>
-        Task<AccessRecord> CreateRecord (AccessRecord body);
+        Task<AccessRecord> CreateRecord (AccessRecord accessRecord);
         /// <summary>
         /// Deletes an access record. Remove an access record, removing associated permissions from all users in record. If a user has a permission from another record, that permission will not be removed.
         /// </summary>
@@ -45,10 +46,11 @@ namespace Authress.SDK.Api
         /// <summary>
         /// Update an access record. Updates an access record adding or removing user permissions to resources.
         /// </summary>
-        /// <param name="body"></param>
         /// <param name="recordId">The identifier of the access record.</param>
+        /// /// <param name="accessRecord"></param>
+        /// /// <param name="expectedLastModifiedTime">The expected last time the record was updated.</param>
         /// <returns>AccessRecord</returns>
-        Task<AccessRecord> UpdateRecord (string recordId, AccessRecord body);
+        Task<AccessRecord> UpdateRecord (string recordId, AccessRecord accessRecord, DateTimeOffset? expectedLastModifiedTime = null);
         #endregion
 
         #region Access Requests
@@ -58,9 +60,9 @@ namespace Authress.SDK.Api
         /// <remarks>
         /// Specify a request in the form of an access record that an admin can approve.
         /// </remarks>
-        /// <param name="body"></param>
+        /// <param name="accessRecord"></param>
         /// <returns>AccessRequest</returns>
-        Task<AccessRequest> CreateRequest (AccessRequest body);
+        Task<AccessRequest> CreateRequest (AccessRequest accessRecord);
 
         /// <summary>
         /// Deletes access request
@@ -101,9 +103,9 @@ namespace Authress.SDK.Api
         /// Updates an access request, approving it or denying it.
         /// </remarks>
         /// <param name="requestId">The identifier of the access request.</param>
-        /// <param name="body"></param>
+        /// <param name="accessRecord"></param>
         /// <returns>AccessRequest</returns>
-        Task<AccessRequest> RespondToAccessRequest (string requestId, AccessRequestResponse body);
+        Task<AccessRequest> RespondToAccessRequest (string requestId, AccessRequestResponse accessRecord);
         #endregion
 
         #region Invites
@@ -116,9 +118,9 @@ namespace Authress.SDK.Api
         /// 5. This accepts the invite.
         /// When the user accepts the invite they will automatically receive the permissions assigned in the Invite. Invites automatically expire after 7 days.
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="accessRecord"></param>
         /// <returns>Invite</returns>
-        Task<Invite> CreateInvite (Invite body);
+        Task<Invite> CreateInvite (Invite accessRecord);
 
         /// <summary>
         /// Accept invite
