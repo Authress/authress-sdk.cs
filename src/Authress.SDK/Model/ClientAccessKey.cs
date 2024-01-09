@@ -35,7 +35,7 @@ namespace Authress.SDK.DTO
         /// </summary>
         [DataMember(Name = "generationDate", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "generationDate")]
-        public DateTime? GenerationDate { get; set; }
+        public DateTimeOffset? GenerationDate { get; set; }
 
         /// <summary>
         /// An encoded access key which contains identifying information for client access token creation. For direct use with the Authress SDKs, not meant to be decoded. Must be saved on creted, as it will never be returned from the API ever again. Authress only saved the corresponding public key to verify private access keys.

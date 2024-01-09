@@ -59,7 +59,7 @@ namespace Authress.SDK.DTO
         /// </summary>
         /// <value>The expected last time the request was updated</value>
         [DataMember(Name="lastUpdated", EmitDefaultValue=false)]
-        public DateTime? LastUpdated { get; private set; }
+        public DateTimeOffset? LastUpdated { get; private set; }
 
 
         /// <summary>

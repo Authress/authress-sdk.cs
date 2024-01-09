@@ -25,7 +25,7 @@ namespace Authress.SDK.DTO
         /// </summary>
         [DataMember(Name = "createdTime", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "createdTime")]
-        public DateTime? CreatedTime { get; set; }
+        public DateTimeOffset? CreatedTime { get; set; }
 
         /// <summary>
         /// The name of the client

@@ -33,7 +33,7 @@ namespace Authress.SDK.DTO {
         /// <value>The expected last time the group was updated</value>
         [DataMember(Name="lastUpdated", EmitDefaultValue=false)]
         [JsonProperty(PropertyName = "lastUpdated")]
-        public DateTime? LastUpdated { get; set; }
+        public DateTimeOffset? LastUpdated { get; set; }
 
         /// <summary>
         /// The list of users in this group
