@@ -60,3 +60,4 @@ Update the API Key: https://www.nuget.org/account/apikeys using the Rhosys Devel
 * [ ] Remove LocalHost from the docs
 * [ ] Tests
 * [x] If-unmodified-since should called `expectedLastModifiedTime`, accept string or dateTime and convert this to an ISO String
+* [ ] Update OAuth2 openapi authentication references in the documentation

@@ -4,6 +4,8 @@ This is the changelog for [Authress SDK](readme.md).
 ## 2.0 ##
 * Renamed `AccessRecordStatements` and other models that end with `S` but aren't actually plural to be `AccessRecordStatement` (without the `S`).
 * All APIs are now part of sub instance properties of the `AuthressClient` class, `AccessClient.AccessRecords` and `AccessClient.ServiceClients`, etc..
+* `ApiBasePath` has been renamed to `AuthressApiUrl`.
+* `HttpClientSettings` Has been removed in favor of `AuthressSettings` Class.
 
 ## 1.5 ##
 * Fix `DateTimeOffset` type assignments, properties that were incorrectly defined as `DateTime` are now correctly `DateTimeOffsets`.

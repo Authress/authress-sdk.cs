@@ -42,13 +42,4 @@ namespace Authress.SDK
                 tokenProvider, customHttpClientHandlerFactory);
         }
     }
-
-    internal class AccessKey
-    {
-        public String Audience { get; set; }
-        public String ClientId { get; set; }
-        public String KeyId { get; set; }
-        public String PrivateKey { get; set; }
-        public String Algorithm { get; set; } = "RS256";
-    }
 }

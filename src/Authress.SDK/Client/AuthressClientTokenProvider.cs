@@ -16,6 +16,15 @@ using Org.BouncyCastle.Security;
 
 namespace Authress.SDK
 {
+    internal class AccessKey
+    {
+        public String Audience { get; set; }
+        public String ClientId { get; set; }
+        public String KeyId { get; set; }
+        public String PrivateKey { get; set; }
+        public String Algorithm { get; set; } = "RS256";
+    }
+
     /// <summary>
     /// Provides the token from locally stored access key. Access key can be retrieved when creating a new client in the Authress UI.
     /// </summary>
