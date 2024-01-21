@@ -5,15 +5,13 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Authress.SDK.Client.JWT;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace Authress.SDK.Client
 {
-    internal class JWT {
-        internal string Sub { get; set; }
-    }
 
     internal class OptimisticPerformanceHandler : DelegatingHandler
     {
@@ -50,8 +48,8 @@ namespace Authress.SDK.Client
                 }
                 var jwtPayload =  token.Split('.')[1];
 
-                JWT jwt = JsonConvert.DeserializeObject<JWT>(Base64UrlEncoder.Decode(jwtPayload));
-                var jwtSubject = jwt.Sub;
+                var jwt = JsonConvert.DeserializeObject<JwtPayload>(Base64UrlEncoder.Decode(jwtPayload));
+                var jwtSubject = jwt.Subject;
                 if (string.IsNullOrEmpty(jwtSubject)) {
                     return await base.SendAsync(request, cancellationToken);
                 }

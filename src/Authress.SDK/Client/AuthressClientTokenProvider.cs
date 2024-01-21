@@ -56,8 +56,10 @@ namespace Authress.SDK
                 this.accessKey = new AccessKey
                 {
                     Algorithm = "EdDSA",
-                    ClientId = accessKeyBase64.Split('.')[0], KeyId = accessKeyBase64.Split('.')[1],
-                    Audience = $"{accountId}.accounts.authress.io", PrivateKey = accessKeyBase64.Split('.')[3]
+                    ClientId = accessKeyBase64.Split('.')[0],
+                    KeyId = accessKeyBase64.Split('.')[1],
+                    Audience = $"{accountId}.accounts.authress.io",
+                    PrivateKey = accessKeyBase64.Split('.')[3]
                 };
 
                 this.resolvedAuthressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");

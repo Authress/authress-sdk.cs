@@ -24,6 +24,20 @@ Installation:
 
 * run: `dotnet add Authress.SDK` (or install via visual tools)
 
+#### Verify Authress JWT
+The recommended solution is to use the C# built in OpenID provider by Microsoft. An example implementation is available in the [Authress C# Starter Kit](https://github.com/Authress/csharp-starter-kit/blob/main/src/Program.cs#L35). However, in some cases you might need to parse the JWT directly and verify it for use in serverless functions.
+
+```csharp
+using Authress.SDK;
+
+// Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
+var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
+var authressClient = new AuthressClient(tokenProvider, authressSettings)
+
+var verifiedUserIdentity = await authressClient.VerifyToken(jwtToken);
+Console.WriteLine($"User ID: {verifiedUserIdentity.UserId}");
+```
+
 #### Authorize users using user identity token
 ```csharp
 using Authress.SDK;
@@ -46,7 +60,7 @@ namespace Microservice
                 return accessToken;
             });
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new AuthressSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
+            var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -103,7 +117,7 @@ namespace Microservice
             var decodedAccessKey = decrypt(accessKey);
             var tokenProvider = new AuthressClientTokenProvider(decodedAccessKey);
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new AuthressSettings { ApiBasePath = "https://CUSTOM_DOMAIN.application.com", };
+            var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // Attempt to Authorize the user for the resource

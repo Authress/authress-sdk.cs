@@ -17,6 +17,7 @@ namespace Authress.SDK
     public partial class AuthressClient
     {
         private readonly HttpClientProvider authressHttpClientProvider;
+        private readonly TokenVerifier tokenVerifier;
 
         /// <summary>
         /// Get the permissions a user has to a resource. Get a summary of the permissions a user has to a particular resource.
@@ -27,6 +28,7 @@ namespace Authress.SDK
                 throw new ArgumentNullException("Missing required parameter AuthressSettings");
             }
             authressHttpClientProvider = new HttpClientProvider(settings, tokenProvider, customHttpClientHandlerFactory);
+            tokenVerifier = new TokenVerifier(settings.ApiBasePath, authressHttpClientProvider);
         }
 
         /// <summary>
@@ -40,6 +42,19 @@ namespace Authress.SDK
             authressHttpClientProvider = new HttpClientProvider(
                 new AuthressSettings { ApiBasePath = settings?.ApiBasePath, RequestTimeout = settings?.RequestTimeout },
                 tokenProvider, customHttpClientHandlerFactory);
+            tokenVerifier = new TokenVerifier(settings.ApiBasePath, authressHttpClientProvider);
         }
+
+        /// <summary>
+        /// Verify a JWT token from anywhere. If it is valid a VerifiedUserIdentity will be returned. If it is invalid an exception will be thrown.
+        /// </summary>
+        /// <param name="jwtToken"></param>
+        /// <returns>A verified user identity that contains the user's ID</returns>
+        /// <exception cref="TokenVerificationException">Token is invalid in some way</exception>
+        /// <exception cref="ArgumentNullException">One of the required parameters for this function was not specified.</exception>
+        public async Task<VerifiedUserIdentity> VerifyToken(string jwtToken) {
+            return await tokenVerifier.VerifyToken(jwtToken);
+        }
+
     }
 }

@@ -17,12 +17,12 @@ namespace Authress.SDK.Client
     }
 
     /// <summary>
-    /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
+    /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
     /// </summary>
     public class HttpClientSettings
     {
         /// <summary>
-        /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
+        /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
         /// </summary>
         public string ApiBasePath { get; set; } = "https://api.authress.io";
 
@@ -33,12 +33,12 @@ namespace Authress.SDK.Client
     }
 
     /// <summary>
-    /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
+    /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
     /// </summary>
     public class AuthressSettings
     {
         /// <summary>
-        /// Authress Domain Host: https://CUSTOM_DOMAIN.application.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
+        /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
         /// </summary>
         public string ApiBasePath { get; set; } = "https://api.authress.io";
 
