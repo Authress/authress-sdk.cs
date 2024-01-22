@@ -16,6 +16,15 @@ using Org.BouncyCastle.Security;
 
 namespace Authress.SDK
 {
+    internal class AccessKey
+    {
+        public String Audience { get; set; }
+        public String ClientId { get; set; }
+        public String KeyId { get; set; }
+        public String PrivateKey { get; set; }
+        public String Algorithm { get; set; } = "RS256";
+    }
+
     /// <summary>
     /// Provides the token from locally stored access key. Access key can be retrieved when creating a new client in the Authress UI.
     /// </summary>
@@ -47,8 +56,10 @@ namespace Authress.SDK
                 this.accessKey = new AccessKey
                 {
                     Algorithm = "EdDSA",
-                    ClientId = accessKeyBase64.Split('.')[0], KeyId = accessKeyBase64.Split('.')[1],
-                    Audience = $"{accountId}.accounts.authress.io", PrivateKey = accessKeyBase64.Split('.')[3]
+                    ClientId = accessKeyBase64.Split('.')[0],
+                    KeyId = accessKeyBase64.Split('.')[1],
+                    Audience = $"{accountId}.accounts.authress.io",
+                    PrivateKey = accessKeyBase64.Split('.')[3]
                 };
 
                 this.resolvedAuthressCustomDomain = (authressCustomDomain ?? $"{accountId}.api.authress.io").Replace("https://", "");
@@ -133,9 +144,9 @@ namespace Authress.SDK
             {
                 { "iss", GetIssuer(authressCustomDomainFallback) },
                 { "sub", accessKey.ClientId },
-                { "exp", expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
-                { "iat", now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
-                { "nbf", now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "exp", (int)Math.Floor(expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
+                { "iat", (int)Math.Floor(now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
+                { "nbf", (int)Math.Floor(now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
                 { "aud", accessKey.Audience },
                 { "scopes", "openid" }
             };
