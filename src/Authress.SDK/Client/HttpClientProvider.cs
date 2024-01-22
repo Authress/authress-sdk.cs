@@ -68,7 +68,7 @@ namespace Authress.SDK.Client
 
         public HttpClientProvider(AuthressSettings settings, ITokenProvider tokenProvider, IHttpClientHandlerFactory customHttpClientHandlerFactory = null)
         {
-            this.settings = settings;
+            this.settings = settings ?? new AuthressSettings();
             this.tokenProvider = tokenProvider;
             this.customHttpClientHandlerFactory = customHttpClientHandlerFactory;
         }

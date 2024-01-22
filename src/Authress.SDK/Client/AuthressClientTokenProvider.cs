@@ -144,9 +144,9 @@ namespace Authress.SDK
             {
                 { "iss", GetIssuer(authressCustomDomainFallback) },
                 { "sub", accessKey.ClientId },
-                { "exp", expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
-                { "iat", now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
-                { "nbf", now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds },
+                { "exp", (int)Math.Floor(expiryDate.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
+                { "iat", (int)Math.Floor(now.Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
+                { "nbf", (int)Math.Floor(now.Subtract(TimeSpan.FromMinutes(10)).Subtract(new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc)).TotalSeconds) },
                 { "aud", accessKey.Audience },
                 { "scopes", "openid" }
             };

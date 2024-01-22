@@ -21,6 +21,10 @@ using System.Text.RegularExpressions;
 using NSec.Cryptography;
 using System.Text;
 using Org.BouncyCastle.Utilities.Encoders;
+using Org.BouncyCastle.OpenSsl;
+using System.IO;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Authress.SDK
 {
@@ -48,7 +52,7 @@ namespace Authress.SDK
     internal enum Alg {
         [EnumMember(Value = "EdDSA")] EdDSA = 1,
         [EnumMember(Value = "RS256")] RS256 = 2,
-        [EnumMember(Value = "RS512")] RSA512 = 3
+        [EnumMember(Value = "RS512")] RS512 = 3
     }
 
     [DataContract]
@@ -142,6 +146,14 @@ namespace Authress.SDK
                 throw new TokenVerificationException("Unauthorized: No Issuer found");
             }
 
+            if (unverifiedJwtPayload.Expires < DateTime.UtcNow) {
+                throw new TokenVerificationException("Unauthorized: Token is expired");
+            }
+
+            if (string.IsNullOrEmpty(authressCustomDomain)) {
+                throw new ArgumentNullException("The authress custom domain must be specified in the AuthressSettings.");
+            }
+
             var completeIssuerUrl = new Uri(Sanitizers.SanitizeUrl(authressCustomDomain));
             try {
                 if (new Uri(unverifiedJwtPayload.Issuer).GetLeftPart(UriPartial.Authority) != completeIssuerUrl.GetLeftPart(UriPartial.Authority)) {
@@ -159,10 +171,18 @@ namespace Authress.SDK
 
             var key = await getPublicKey(unverifiedJwtPayload.Issuer, jwtHeader.KeyId);
 
+            var verifiedUserIdentity = VerifySignature(jwtToken, key);
+            return verifiedUserIdentity;
+        }
+
+        private VerifiedUserIdentity VerifySignature(string jwtToken, Jwk key) {
+
+            var unverifiedJwtPayload = JsonConvert.DeserializeObject<Client.JWT.JwtPayload>(Base64UrlEncoder.Decode(jwtToken.Split('.')[1]));
+
             if (key.Alg == Alg.EdDSA) {
                 var ed25519alg = SignatureAlgorithm.Ed25519;
 
-                var data = Encoding.UTF8.GetBytes($"{jwtHeader}.{unverifiedJwtPayload}");
+                var data = Encoding.UTF8.GetBytes($"{jwtToken.Split('.')[0]}.{jwtToken.Split('.')[1]}");
 
                 var keyAsString = key.x.Replace('_', '/').Replace('-', '+');
                 switch(keyAsString.Length % 4) {
@@ -170,8 +190,14 @@ namespace Authress.SDK
                     case 3: keyAsString += "="; break;
                 }
 
+                var jwtTokenSignature = jwtToken.Split('.')[2].Replace('_', '/').Replace('-', '+');
+                switch(jwtTokenSignature.Length % 4) {
+                    case 2: jwtTokenSignature += "=="; break;
+                    case 3: jwtTokenSignature += "="; break;
+                }
+
                 var edDsaPublicKey = NSec.Cryptography.PublicKey.Import(ed25519alg, Convert.FromBase64String(keyAsString), KeyBlobFormat.PkixPublicKey);
-                var signatureData = Encoding.UTF8.GetBytes(Base64UrlEncoder.Decode(jwtToken.Split('.')[2]));
+                var signatureData = Convert.FromBase64String(jwtTokenSignature);
                 if (!SignatureAlgorithm.Ed25519.Verify(edDsaPublicKey, data, signatureData)) {
                     throw new TokenVerificationException($"Unauthorized: Token Signature is not valid.");
                 }
@@ -182,12 +208,11 @@ namespace Authress.SDK
             }
 
             // ELSE assume RS256 or RS512
-
             var rsa = new RSACryptoServiceProvider();
             rsa.ImportParameters(new RSAParameters()
                 {
-                    Modulus = Encoding.UTF8.GetBytes(Base64UrlEncoder.Decode(key.n)),
-                    Exponent = Encoding.UTF8.GetBytes(Base64UrlEncoder.Decode(key.e))
+                    Modulus = Convert.FromBase64String(key.n),
+                    Exponent = Convert.FromBase64String(key.e)
                 });
 
             var tokenHandler = new JwtSecurityTokenHandler();

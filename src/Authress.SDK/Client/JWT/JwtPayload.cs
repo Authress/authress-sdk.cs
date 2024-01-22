@@ -1,4 +1,7 @@
+using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Authress.SDK.Client.JWT
 {
@@ -11,6 +14,10 @@ namespace Authress.SDK.Client.JWT
 
         [DataMember(Name = "iss")]
         internal string Issuer { get; set; }
+
+        [DataMember(Name = "exp")]
+        [JsonConverter(typeof(UnixDateTimeConverter))]
+        internal DateTimeOffset Expires { get; set; }
     }
 
     [DataContract]

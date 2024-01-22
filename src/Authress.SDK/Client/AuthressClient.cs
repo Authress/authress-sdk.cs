@@ -40,7 +40,7 @@ namespace Authress.SDK
                 throw new ArgumentNullException("Missing required parameter HttpClientSettings");
             }
             authressHttpClientProvider = new HttpClientProvider(
-                new AuthressSettings { ApiBasePath = settings?.ApiBasePath, RequestTimeout = settings?.RequestTimeout },
+                new AuthressSettings { ApiBasePath = settings.ApiBasePath, RequestTimeout = settings.RequestTimeout },
                 tokenProvider, customHttpClientHandlerFactory);
             tokenVerifier = new TokenVerifier(settings.ApiBasePath, authressHttpClientProvider);
         }
