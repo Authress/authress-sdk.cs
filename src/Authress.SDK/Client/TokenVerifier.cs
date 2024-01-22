@@ -175,6 +175,16 @@ namespace Authress.SDK
             return verifiedUserIdentity;
         }
 
+        private byte[] ConvertFromBase64Url(string base64String) {
+            var result = base64String.Replace('_', '/').Replace('-', '+');
+            switch(result.Length % 4) {
+                case 2: result += "=="; break;
+                case 3: result += "="; break;
+            }
+
+            return Convert.FromBase64String(result);
+        }
+
         private VerifiedUserIdentity VerifySignature(string jwtToken, Jwk key) {
 
             var unverifiedJwtPayload = JsonConvert.DeserializeObject<Client.JWT.JwtPayload>(Base64UrlEncoder.Decode(jwtToken.Split('.')[1]));
@@ -184,20 +194,8 @@ namespace Authress.SDK
 
                 var data = Encoding.UTF8.GetBytes($"{jwtToken.Split('.')[0]}.{jwtToken.Split('.')[1]}");
 
-                var keyAsString = key.x.Replace('_', '/').Replace('-', '+');
-                switch(keyAsString.Length % 4) {
-                    case 2: keyAsString += "=="; break;
-                    case 3: keyAsString += "="; break;
-                }
-
-                var jwtTokenSignature = jwtToken.Split('.')[2].Replace('_', '/').Replace('-', '+');
-                switch(jwtTokenSignature.Length % 4) {
-                    case 2: jwtTokenSignature += "=="; break;
-                    case 3: jwtTokenSignature += "="; break;
-                }
-
-                var edDsaPublicKey = NSec.Cryptography.PublicKey.Import(ed25519alg, Convert.FromBase64String("MCowBQYDK2VwAyEA" + keyAsString), KeyBlobFormat.PkixPublicKey);
-                var signatureData = Convert.FromBase64String(jwtTokenSignature);
+                var edDsaPublicKey = NSec.Cryptography.PublicKey.Import(ed25519alg, ConvertFromBase64Url("MCowBQYDK2VwAyEA" + key.x), KeyBlobFormat.PkixPublicKey);
+                var signatureData = ConvertFromBase64Url(jwtToken.Split('.')[2]);
                 if (!SignatureAlgorithm.Ed25519.Verify(edDsaPublicKey, data, signatureData)) {
                     throw new TokenVerificationException($"Unauthorized: Token Signature is not valid.");
                 }
@@ -211,8 +209,8 @@ namespace Authress.SDK
             var rsa = new RSACryptoServiceProvider();
             rsa.ImportParameters(new RSAParameters()
                 {
-                    Modulus = Convert.FromBase64String(key.n),
-                    Exponent = Convert.FromBase64String(key.e)
+                    Modulus = ConvertFromBase64Url(key.n),
+                    Exponent = ConvertFromBase64Url(key.e)
                 });
 
             var tokenHandler = new JwtSecurityTokenHandler();
