@@ -196,7 +196,7 @@ namespace Authress.SDK
                     case 3: jwtTokenSignature += "="; break;
                 }
 
-                var edDsaPublicKey = NSec.Cryptography.PublicKey.Import(ed25519alg, Convert.FromBase64String(keyAsString), KeyBlobFormat.PkixPublicKey);
+                var edDsaPublicKey = NSec.Cryptography.PublicKey.Import(ed25519alg, Convert.FromBase64String("MCowBQYDK2VwAyEA" + keyAsString), KeyBlobFormat.PkixPublicKey);
                 var signatureData = Convert.FromBase64String(jwtTokenSignature);
                 if (!SignatureAlgorithm.Ed25519.Verify(edDsaPublicKey, data, signatureData)) {
                     throw new TokenVerificationException($"Unauthorized: Token Signature is not valid.");

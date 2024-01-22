@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Authress.SDK.Utilities;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NSec.Cryptography;
@@ -68,8 +69,8 @@ namespace Authress.SDK
 
         private string GetIssuer(string authressCustomDomainFallback = null)
         {
-            var rawDomain = (this.authressCustomDomain ?? authressCustomDomainFallback ?? resolvedAuthressCustomDomain).Replace("https://", "");
-            return $"https://{rawDomain}/v1/clients/{System.Web.HttpUtility.UrlEncode(this.accessKey.ClientId)}";
+            var rawDomain = Sanitizers.SanitizeUrl(this.authressCustomDomain ?? authressCustomDomainFallback ?? resolvedAuthressCustomDomain);
+            return $"{rawDomain}/v1/clients/{System.Web.HttpUtility.UrlEncode(this.accessKey.ClientId)}";
         }
 
         private static SigningCredentials GetSigningCredentials(string pem, string keyId)

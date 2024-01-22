@@ -13,7 +13,7 @@ namespace Authress.SDK.Utilities {
             }
 
             if (Regex.IsMatch(urlString, @"^localhost", RegexOptions.IgnoreCase)) {
-                return "http://{url}";
+                return $"http://{urlString}";
             }
 
             return $"https://{urlString}";

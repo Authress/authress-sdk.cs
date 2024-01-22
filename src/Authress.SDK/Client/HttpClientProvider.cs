@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Authress.SDK.Utilities;
 
 namespace Authress.SDK.Client
 {
@@ -37,10 +38,16 @@ namespace Authress.SDK.Client
     /// </summary>
     public class AuthressSettings
     {
+        private string apiBasePath = "https://api.authress.io";
         /// <summary>
         /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
         /// </summary>
-        public string ApiBasePath { get; set; } = "https://api.authress.io";
+        public string ApiBasePath {
+            get { return apiBasePath; }
+            set {
+                apiBasePath = Sanitizers.SanitizeUrl(value);
+            }
+        }
 
         /// <summary>
         /// Timeout for requests to Authress. Default is unset.
@@ -169,8 +176,9 @@ namespace Authress.SDK.Client
     {
         private readonly Uri baseUrl;
 
-        public RewriteBaseUrlHandler(HttpMessageHandler innerHandler, string baseUrl) : base(innerHandler)
+        public RewriteBaseUrlHandler(HttpMessageHandler innerHandler, string originalBaseUrl) : base(innerHandler)
         {
+            var baseUrl = Sanitizers.SanitizeUrl(originalBaseUrl);
             this.baseUrl = new Uri(baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/");
         }
 

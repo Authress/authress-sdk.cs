@@ -29,7 +29,8 @@ namespace Authress.SDK.UnitTests.TokenVerifier
     {
 
         private static string authressCustomDomain = "https://unit-test-customdomain.authress.io";
-        private static (string, string) eddsaKeys = ("MC4CAQAwBQYDK2VwBCIEIHWOlqpfN1YdPSAvAZlSxOyZs0v0jnOj3flvG4ezJ8/R", "MCowBQYDK2VwAyEAP1ghjuexanmp5hYgSYRvbFJirquynaCyolH3vHb9JCE=");
+        // Prefix MCowBQYDK2VwAyEA is inferred by the configuration of the JWK
+        private static (string, string) eddsaKeys = ("MC4CAQAwBQYDK2VwBCIEIHWOlqpfN1YdPSAvAZlSxOyZs0v0jnOj3flvG4ezJ8/R", "P1ghjuexanmp5hYgSYRvbFJirquynaCyolH3vHb9JCE=");
 
         [Fact]
         public async Task ValidateEddsaToken() {
