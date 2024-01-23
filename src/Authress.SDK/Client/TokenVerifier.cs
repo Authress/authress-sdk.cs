@@ -96,9 +96,10 @@ namespace Authress.SDK
             this.authressHttpClientProvider = authressHttpClientProvider;
         }
 
-        private async Task<Jwk> getPublicKey(string issuer, string kid) {
+        private async Task<Jwk> getPublicKey(string issuer, string keyId) {
+            var cacheKey = $"{issuer}|{keyId}";
 
-            if (jwkCache.TryGetValue(kid, out Jwk cachedJwk))
+            if (jwkCache.TryGetValue(cacheKey, out Jwk cachedJwk))
             {
                 if (cachedJwk != null)
                 {
@@ -116,12 +117,12 @@ namespace Authress.SDK
                 jwkResponse = await response.Content.ReadAsAsync<JwkResponse>();
             }
 
-            var foundKey = jwkResponse.Keys.FirstOrDefault(k => k.kid == kid);
+            var foundKey = jwkResponse.Keys.FirstOrDefault(k => k.kid == keyId);
             if (foundKey == null) {
                 throw new TokenVerificationException("No matching public key found for token");
             }
 
-            jwkCache.Set(kid, foundKey, new MemoryCacheEntryOptions {
+            jwkCache.Set(cacheKey, foundKey, new MemoryCacheEntryOptions {
                 SlidingExpiration = TimeSpan.FromDays(30),
                 Size = 1
             });
@@ -129,11 +130,12 @@ namespace Authress.SDK
             return foundKey;
         }
 
-        public async Task<VerifiedUserIdentity> VerifyToken(string jwtToken) {
-
-            if (string.IsNullOrEmpty(jwtToken)) {
+        public async Task<VerifiedUserIdentity> VerifyToken(string authorizationHeaderValue) {
+            if (string.IsNullOrEmpty(authorizationHeaderValue)) {
                 throw new ArgumentNullException("Unauthorized: Token not specified");
             }
+
+            var jwtToken = authorizationHeaderValue.Trim().Replace("Bearer ", string.Empty, StringComparison.InvariantCultureIgnoreCase);
 
             var jwtHeader = JsonConvert.DeserializeObject<Client.JWT.JwtHeader>(Base64UrlEncoder.Decode(jwtToken.Split('.')[0]));
             var unverifiedJwtPayload = JsonConvert.DeserializeObject<Client.JWT.JwtPayload>(Base64UrlEncoder.Decode(jwtToken.Split('.')[1]));
