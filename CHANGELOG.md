@@ -10,6 +10,7 @@ This is the changelog for [Authress SDK](readme.md).
 ## 1.5 ##
 * Fix `DateTimeOffset` type assignments, properties that were incorrectly defined as `DateTime` are now correctly `DateTimeOffsets`.
 * Add in `VerifyToken()` method to `AuthressClient`..
+* Fix `Invite` Statement usage to use dedicated InviteStatement.
 
 ## 1.4 ##
 * Support exponential back-off retries on unexpected failures.
