@@ -59,6 +59,85 @@ namespace Authress.SDK.UnitTests.TokenVerifier
         }
 
         [Fact]
+        public async Task ValidateTokenWithAltCustomDomain() {
+            var testUserId = Guid.NewGuid().ToString();
+            var testKeyId = Guid.NewGuid().ToString();
+            var authressClientTokenProvider = new AuthressClientTokenProvider($"{testUserId}.{testKeyId}.account.{eddsaKeys.Item1}", "authress.login.authress.io");
+            // setup
+            var edDsaJwkResponse = new JwkResponse { Keys = new List<Jwk> { new Jwk { Alg = Alg.EdDSA, kid = testKeyId, x = eddsaKeys.Item2 } } };
+            var jwtToken = await authressClientTokenProvider.GetBearerToken();
+
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = edDsaJwkResponse.ToHttpContent() });
+
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
+            mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
+
+            var mockHttpClientProvider = new HttpClientProvider(null, null, mockFactory.Object);
+            var tokenVerifier = new SDK.TokenVerifier("authress.api-eu-west.authress.io", mockHttpClientProvider);
+
+            var result = await tokenVerifier.VerifyToken(jwtToken);
+            result.Should().BeEquivalentTo(new VerifiedUserIdentity { UserId = testUserId });
+
+            mockFactory.Verify(mockFactory => mockFactory.Create(), Times.Once());
+            mockHttpClient.VerifyAll();
+        }
+
+        [Fact]
+        public async Task ValidateTokenWithAltCustomDomainForBoth() {
+            var testUserId = Guid.NewGuid().ToString();
+            var testKeyId = Guid.NewGuid().ToString();
+            var authressClientTokenProvider = new AuthressClientTokenProvider($"{testUserId}.{testKeyId}.account.{eddsaKeys.Item1}", "authress.api-eu-west.authress.io");
+            // setup
+            var edDsaJwkResponse = new JwkResponse { Keys = new List<Jwk> { new Jwk { Alg = Alg.EdDSA, kid = testKeyId, x = eddsaKeys.Item2 } } };
+            var jwtToken = await authressClientTokenProvider.GetBearerToken();
+
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = edDsaJwkResponse.ToHttpContent() });
+
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
+            mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
+
+            var mockHttpClientProvider = new HttpClientProvider(null, null, mockFactory.Object);
+            var tokenVerifier = new SDK.TokenVerifier("authress.api-eu-west.authress.io", mockHttpClientProvider);
+
+            var result = await tokenVerifier.VerifyToken(jwtToken);
+            result.Should().BeEquivalentTo(new VerifiedUserIdentity { UserId = testUserId });
+
+            mockFactory.Verify(mockFactory => mockFactory.Create(), Times.Once());
+            mockHttpClient.VerifyAll();
+        }
+
+
+        [Fact]
+        public async Task ValidateTokenWithNoCustomDomain() {
+            var testUserId = Guid.NewGuid().ToString();
+            var testKeyId = Guid.NewGuid().ToString();
+            var authressClientTokenProvider = new AuthressClientTokenProvider($"{testUserId}.{testKeyId}.account.{eddsaKeys.Item1}", "authress.login.authress.io");
+            // setup
+            var edDsaJwkResponse = new JwkResponse { Keys = new List<Jwk> { new Jwk { Alg = Alg.EdDSA, kid = testKeyId, x = eddsaKeys.Item2 } } };
+            var jwtToken = await authressClientTokenProvider.GetBearerToken();
+
+            var mockHttpClient = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            mockHttpClient.Protected().SetupSequence<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(() => new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = edDsaJwkResponse.ToHttpContent() });
+
+            var mockFactory = new Mock<IHttpClientHandlerFactory>(MockBehavior.Strict);
+            mockFactory.Setup(factory => factory.Create()).Returns(mockHttpClient.Object);
+
+            var mockHttpClientProvider = new HttpClientProvider(null, null, mockFactory.Object);
+            var tokenVerifier = new SDK.TokenVerifier("authress.login.authress.io", mockHttpClientProvider);
+
+            var result = await tokenVerifier.VerifyToken(jwtToken);
+            result.Should().BeEquivalentTo(new VerifiedUserIdentity { UserId = testUserId });
+
+            mockFactory.Verify(mockFactory => mockFactory.Create(), Times.Once());
+            mockHttpClient.VerifyAll();
+        }
+
+        [Fact]
         public async Task ValidateEddsaTokenWithExtraSpaces() {
             var testUserId = Guid.NewGuid().ToString();
             var testKeyId = Guid.NewGuid().ToString();

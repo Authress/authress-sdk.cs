@@ -156,9 +156,11 @@ namespace Authress.SDK
                 throw new ArgumentNullException("The authress custom domain must be specified in the AuthressSettings.");
             }
 
-            var completeIssuerUrl = new Uri(Sanitizers.SanitizeUrl(authressCustomDomain));
+            var completeIssuerUrl = new Uri(Sanitizers.SanitizeIssuerUrl(authressCustomDomain));
+            var altIssuerUrl = new Uri(Sanitizers.SanitizeUrl(authressCustomDomain));
             try {
-                if (new Uri(unverifiedJwtPayload.Issuer).GetLeftPart(UriPartial.Authority) != completeIssuerUrl.GetLeftPart(UriPartial.Authority)) {
+                if (new Uri(unverifiedJwtPayload.Issuer).GetLeftPart(UriPartial.Authority) != completeIssuerUrl.GetLeftPart(UriPartial.Authority)
+                    && new Uri(unverifiedJwtPayload.Issuer).GetLeftPart(UriPartial.Authority) != altIssuerUrl.GetLeftPart(UriPartial.Authority)) {
                     throw new TokenVerificationException($"Unauthorized: Invalid Issuer: {unverifiedJwtPayload.Issuer}");
                 }
             } catch (Exception) {
