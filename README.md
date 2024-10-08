@@ -31,7 +31,7 @@ The recommended solution is to use the C# built in OpenID provider by Microsoft.
 using Authress.SDK;
 
 // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
+var authressSettings = new AuthressSettings { AuthressApiUrl = "https://authress.company.com", };
 var authressClient = new AuthressClient(tokenProvider, authressSettings)
 
 var verifiedUserIdentity = await authressClient.VerifyToken(jwtToken);
@@ -60,7 +60,7 @@ namespace Microservice
                 return accessToken;
             });
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
+            var authressSettings = new AuthressSettings { AuthressApiUrl = "https://authress.company.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -86,7 +86,7 @@ namespace Microservice
             // automatically populate forward the users token
             // 1. instantiate all the necessary classes
             var tokenProvider = new ManualTokenProvider();
-            var authressSettings = new AuthressSettings { ApiBasePath = "https://DOMAIN.api.authress.io", };
+            var authressSettings = new AuthressSettings { AuthressApiUrl = "https://DOMAIN.api.authress.io", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // 2. At runtime attempt to Authorize the user for the resource
@@ -117,7 +117,7 @@ namespace Microservice
             var decodedAccessKey = decrypt(accessKey);
             var tokenProvider = new AuthressClientTokenProvider(decodedAccessKey);
             // Get an authress custom domain: https://authress.io/app/#/settings?focus=domain
-            var authressSettings = new AuthressSettings { ApiBasePath = "https://authress.company.com", };
+            var authressSettings = new AuthressSettings { AuthressApiUrl = "https://authress.company.com", };
             var authressClient = new AuthressClient(tokenProvider, authressSettings);
 
             // Attempt to Authorize the user for the resource

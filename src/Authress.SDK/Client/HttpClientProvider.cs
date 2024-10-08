@@ -20,32 +20,16 @@ namespace Authress.SDK.Client
     /// <summary>
     /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
     /// </summary>
-    public class HttpClientSettings
-    {
-        /// <summary>
-        /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
-        /// </summary>
-        public string ApiBasePath { get; set; } = "https://api.authress.io";
-
-        /// <summary>
-        /// Timeout for requests to Authress. Default is unset.
-        /// </summary>
-        public TimeSpan? RequestTimeout { get; set; } = null;
-    }
-
-    /// <summary>
-    /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
-    /// </summary>
     public class AuthressSettings
     {
-        private string apiBasePath = "https://api.authress.io";
+        private string authressApiUrl = "https://api.authress.io";
         /// <summary>
         /// Authress Domain Host: https://authress.company.com (Get an authress custom domain: https://authress.io/app/#/settings?focus=domain)
         /// </summary>
-        public string ApiBasePath {
-            get { return apiBasePath; }
+        public string AuthressApiUrl {
+            get { return authressApiUrl; }
             set {
-                apiBasePath = Sanitizers.SanitizeUrl(value);
+                authressApiUrl = Sanitizers.SanitizeUrl(value);
             }
         }
 
@@ -116,8 +100,8 @@ namespace Authress.SDK.Client
 
                 // List of Handlers that never need to be retried
                 outermostHandler = new OptimisticPerformanceHandler(outermostHandler, settings.CacheFallbackNormTimeout);
-                outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.ApiBasePath);
-                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider, settings.ApiBasePath);
+                outermostHandler = new RewriteBaseUrlHandler(outermostHandler, settings.AuthressApiUrl);
+                outermostHandler = new AddAuthorizationHeaderHandler(outermostHandler, tokenProvider, settings.AuthressApiUrl);
                 outermostHandler = new AddUserAgentHeaderHandler(outermostHandler);
                 /**** ⌃ Called First ⌃ ******/
 
@@ -128,7 +112,7 @@ namespace Authress.SDK.Client
                     clientProxy.Timeout = settings.RequestTimeout.Value;
                 }
 
-                clientProxy.BaseAddress = new Uri(settings.ApiBasePath);
+                clientProxy.BaseAddress = new Uri(settings.AuthressApiUrl);
                 return clientProxy;
             }
             finally

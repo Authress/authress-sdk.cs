@@ -11,7 +11,7 @@ namespace Authress.SDK.Api
     public interface IUserPermissionsApi
     {
         /// <summary>
-        /// Get the users resources. Get the users resources. This result is a list of resource uris that a user has an explicit permission to, a user with * access to all sub resources will return an empty list and {AccessToAllSubResources} will be populated. The list will be paginated.
+        /// Get the users resources. This result is a list of resource uris that a user has an permission to. By default only the top level matching resources are returned. To get a user's list of deeply nested resources, set the collectionConfiguration to be INCLUDE_NESTED. This collection is paginated.
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>

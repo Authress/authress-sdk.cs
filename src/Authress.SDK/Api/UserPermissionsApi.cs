@@ -135,7 +135,7 @@ namespace Authress.SDK
         }
 
         /// <summary>
-        /// Get the users resources. Get the users resources. This result is a list of resource uris that a user has an explicit permission to, a user with * access to all sub resources will return an empty list and {AccessToAllSubResources} will be populated. The list will be paginated.
+        /// Get the users resources. This result is a list of resource uris that a user has an permission to. By default only the top level matching resources are returned. To get a user's list of deeply nested resources, set the collectionConfiguration to be INCLUDE_NESTED. This collection is paginated.
         /// </summary>
         /// <param name="userId">The user to check permissions on</param>
         /// <param name="resourceCollectionUri">The uri path of a collection resource to fetch permissions for.</param>
@@ -152,56 +152,22 @@ namespace Authress.SDK
                 throw new ArgumentNullException("Missing required parameter 'userId'.");
             }
 
-            if (collectionConfiguration == CollectionConfigurationEnum.INCLUDE_NESTED)
+            var queryParams = new Dictionary<string, string>
             {
-                var queryParams = new Dictionary<string, string>
-                {
-                    { "resourceUri", resourceCollectionUri },
-                    { "permissions", permission },
-                    { "collectionConfiguration", collectionConfiguration.ToString() }
-                };
+                { "resourceUri", resourceCollectionUri },
+                { "permissions", permission },
+                { "collectionConfiguration", collectionConfiguration.ToString() }
+            };
 
-                var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
-                    .Select(pair => $"{pair.Key}={System.Web.HttpUtility.UrlEncode(pair.Value)}").Aggregate((next, total) => $"{total}&{next}");
-                var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources?{queryString}";
+            var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
+                .Select(pair => $"{pair.Key}={System.Web.HttpUtility.UrlEncode(pair.Value)}").Aggregate((next, total) => $"{total}&{next}");
+            var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources?{queryString}";
 
-                var client = await authressHttpClientProvider.GetHttpClientAsync();
-                using (var response = await client.GetAsync(path))
-                {
-                    await response.ThrowIfNotSuccessStatusCode();
-                    return await response.Content.ReadAsAsync<UserResources>();
-                }
-            }
-            else
+            var client = await authressHttpClientProvider.GetHttpClientAsync();
+            using (var response = await client.GetAsync(path))
             {
-
-                var queryParams = new Dictionary<string, string>
-                {
-                    { "resourceUri", resourceCollectionUri },
-                    { "permissions", permission }
-                };
-
-                var queryString = queryParams.Where(pair => !string.IsNullOrEmpty(pair.Value))
-                    .Select(pair => $"{pair.Key}={System.Web.HttpUtility.UrlEncode(pair.Value)}").Aggregate((next, total) => $"{total}&{next}");
-                var path = $"/v1/users/{System.Web.HttpUtility.UrlEncode(userId)}/resources?{queryString}";
-
-                var client = await authressHttpClientProvider.GetHttpClientAsync();
-
-                var authorizeUserAsync = AuthorizeUser(userId, resourceCollectionUri, permission);
-                using (var response = await client.GetAsync(path))
-                {
-                    try
-                    {
-                        await authorizeUserAsync;
-                        return new UserResources { UserId = userId, AccessToAllSubResources = true, Resources = null };
-                    }
-                    catch (Exception)
-                    {
-                        /* Ignore if the user doesn't have permission or if there is a problem, instead fallback to looking up explicit resources by permission */
-                    }
-                    await response.ThrowIfNotSuccessStatusCode();
-                    return await response.Content.ReadAsAsync<UserResources>();
-                }
+                await response.ThrowIfNotSuccessStatusCode();
+                return await response.Content.ReadAsAsync<UserResources>();
             }
         }
     }

@@ -28,21 +28,7 @@ namespace Authress.SDK
                 throw new ArgumentNullException("Missing required parameter AuthressSettings");
             }
             authressHttpClientProvider = new HttpClientProvider(settings, tokenProvider, customHttpClientHandlerFactory);
-            tokenVerifier = new TokenVerifier(settings.ApiBasePath, authressHttpClientProvider);
-        }
-
-        /// <summary>
-        /// Deprecated Constructor
-        /// </summary>
-        public AuthressClient(ITokenProvider tokenProvider, HttpClientSettings settings, IHttpClientHandlerFactory customHttpClientHandlerFactory = null)
-        {
-            if (settings == null) {
-                throw new ArgumentNullException("Missing required parameter HttpClientSettings");
-            }
-            authressHttpClientProvider = new HttpClientProvider(
-                new AuthressSettings { ApiBasePath = settings.ApiBasePath, RequestTimeout = settings.RequestTimeout },
-                tokenProvider, customHttpClientHandlerFactory);
-            tokenVerifier = new TokenVerifier(settings.ApiBasePath, authressHttpClientProvider);
+            tokenVerifier = new TokenVerifier(settings.AuthressApiUrl, authressHttpClientProvider);
         }
 
         /// <summary>
