@@ -65,7 +65,7 @@ namespace Authress.SDK.DTO
         /// <value>The list of users this record applies to</value>
         [DataMember(Name = "users", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "users")]
-        public List<AccessRecordUsers> Users { get; set; }
+        public List<AccessRecordUser> Users { get; set; }
 
         /// <summary>
         /// The list of groups this record applies to. Users in these groups will be receive access to the resources listed.
@@ -81,7 +81,7 @@ namespace Authress.SDK.DTO
         /// <value>The list of admin that can edit this record even if they do not have global record edit permissions.</value>
         [DataMember(Name = "admins", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "admins")]
-        public List<AccessRecordUsers> Admins { get; set; }
+        public List<AccessRecordUser> Admins { get; set; }
 
         /// <summary>
         /// A list of statements which match roles to resources. Users in this record have all statements apply to them
@@ -89,7 +89,7 @@ namespace Authress.SDK.DTO
         /// <value>A list of statements which match roles to resources. Users in this record have all statements apply to them</value>
         [DataMember(Name = "statements", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "statements")]
-        public List<AccessRecordStatements> Statements { get; set; }
+        public List<AccessRecordStatement> Statements { get; set; }
 
         /// <summary>
         /// Gets or Sets Links

@@ -17,13 +17,13 @@ namespace Authress.SDK.DTO
         /// </summary>
         /// <value>The list of users the access applies to</value>
         [DataMember(Name="users", EmitDefaultValue=false)]
-        public List<AccessRecordUsers> Users { get; set; }
+        public List<AccessRecordUser> Users { get; set; }
 
         /// <summary>
         /// A list of statements which match roles to resources. Users here will have all statements apply to them
         /// </summary>
         /// <value>A list of statements which match roles to resources. Users here will have all statements apply to them</value>
         [DataMember(Name="statements", EmitDefaultValue=false)]
-        public List<AccessRecordStatements> Statements { get; set; }
+        public List<AccessRecordStatement> Statements { get; set; }
     }
 }

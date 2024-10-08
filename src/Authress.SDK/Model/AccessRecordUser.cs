@@ -12,7 +12,7 @@ namespace Authress.SDK.DTO
     ///
     /// </summary>
     [DataContract]
-    public class AccessRecordUsers
+    public class AccessRecordUser
     {
         /// <summary>
         /// Gets or Sets UserId

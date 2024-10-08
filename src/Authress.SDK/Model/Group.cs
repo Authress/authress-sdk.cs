@@ -41,7 +41,7 @@ namespace Authress.SDK.DTO {
         /// <value>The list of users in this group</value>
         [DataMember(Name="users", EmitDefaultValue=false)]
         [JsonProperty(PropertyName = "users")]
-        public List<AccessRecordUsers> Users { get; set; }
+        public List<AccessRecordUser> Users { get; set; }
 
         /// <summary>
         /// The list of admins that can edit this record even if they do not have global record edit permissions.
@@ -49,7 +49,7 @@ namespace Authress.SDK.DTO {
         /// <value>The list of admins that can edit this record even if they do not have global record edit permissions.</value>
         [DataMember(Name="admins", EmitDefaultValue=false)]
         [JsonProperty(PropertyName = "admins")]
-        public List<AccessRecordUsers> Admins { get; set; }
+        public List<AccessRecordUser> Admins { get; set; }
 
         /// <summary>
         /// Gets or Sets Links

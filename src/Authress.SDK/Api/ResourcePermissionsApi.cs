@@ -12,7 +12,7 @@ namespace Authress.SDK
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
-    public partial class AuthressClient : IResourcePermissionsApi
+    internal partial class AuthressClient : IResourcePermissionsApi
     {
         /// <summary>
         /// List resource configurations Permissions can be set globally at a resource level. Lists any resources with a globally set resource policy

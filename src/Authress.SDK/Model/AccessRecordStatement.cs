@@ -8,7 +8,7 @@ namespace Authress.SDK.DTO
     ///
     /// </summary>
     [DataContract]
-    public class AccessRecordStatements
+    public class AccessRecordStatement
     {
         /// <summary>
         /// Gets or Sets Roles
@@ -30,7 +30,7 @@ namespace Authress.SDK.DTO
         /// <value>The list of users this record statement applies to</value>
         [DataMember(Name = "users", EmitDefaultValue = false)]
         [JsonProperty(PropertyName = "users")]
-        public List<AccessRecordUsers> Users { get; set; }
+        public List<AccessRecordUser> Users { get; set; }
 
         /// <summary>
         /// The list of groups this record statement applies to. Users in these groups will be receive access to the resources listed.

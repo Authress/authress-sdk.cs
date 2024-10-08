@@ -5,6 +5,7 @@ This is the changelog for [Authress SDK](readme.md).
 * `ApiBasePath` has been renamed to `AuthressApiUrl`.
 * `HttpClientSettings` Has been removed in favor of `AuthressSettings` Class.
 * [Breaking] `UserPermissions.GetUserResources()` no longer returns the property `AccessToAllSubResources`. When a user only has access to parent resources, the list will always be empty unless the `CollectionConfigurationEnum` property is specified.
+* [Breaking] Renamed `AccessRecordStatements` and other models that end with `S` but aren't actually plural to be `AccessRecordStatement` (without the `S`).
 
 ## 1.5 ##
 * Fix `DateTimeOffset` type assignments, properties that were incorrectly defined as `DateTime` are now correctly `DateTimeOffsets`.
