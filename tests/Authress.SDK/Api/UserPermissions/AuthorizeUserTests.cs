@@ -27,7 +27,7 @@ namespace Authress.SDK.UnitTests
             public string Permission { get; set; }
         }
 
-        public static TestData<TestCase> TestCases = new TestData<TestCase>
+        public static TestData<TestCase> TestCases => new TestData<TestCase>
         {
             {
                 "Expect cached value to be returned",
